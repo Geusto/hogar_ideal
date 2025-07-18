@@ -1,0 +1,28 @@
+# Configuración básica para Hogar Ideal
+RewriteEngine On
+
+# Redirigir todas las peticiones a public/index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ public/index.php [QSA,L]
+
+# Proteger archivos sensibles
+<Files "config/*">
+  Order allow,deny
+  Deny from all
+</Files>
+
+<Files "models/*">
+  Order allow,deny
+  Deny from all
+</Files>
+
+<Files "controllers/*">
+  Order allow,deny
+  Deny from all
+</Files>
+
+<Files "includes/*">
+  Order allow,deny
+  Deny from all
+</Files> 
