@@ -32,8 +32,8 @@ class Propiedad {
     
     // Crear nueva propiedad
     public function create($data) {
-        $sql = "INSERT INTO propiedad (tipo, direccion, habitaciones, banos, superficie, precio, estado, id_cliente_vendedor, id_agente) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO propiedad (tipo, direccion, habitaciones, banos, superficie, precio, estado, portada, id_cliente_vendedor, id_agente) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
@@ -44,6 +44,7 @@ class Propiedad {
             $data['superficie'],
             $data['precio'],
             $data['estado'],
+            $data['portada'],
             $data['id_cliente_vendedor'],
             $data['id_agente']
         ]);
@@ -53,7 +54,7 @@ class Propiedad {
     public function update($id, $data) {
         $sql = "UPDATE propiedad SET 
                 tipo = ?, direccion = ?, habitaciones = ?, banos = ?, 
-                superficie = ?, precio = ?, estado = ?, id_cliente_vendedor = ?, id_agente = ? 
+                superficie = ?, precio = ?, estado = ?, portada = ?, id_cliente_vendedor = ?, id_agente = ? 
                 WHERE id_propiedad = ?";
         
         $stmt = $this->pdo->prepare($sql);
@@ -65,6 +66,7 @@ class Propiedad {
             $data['superficie'],
             $data['precio'],
             $data['estado'],
+            $data['portada'],
             $data['id_cliente_vendedor'],
             $data['id_agente'],
             $id

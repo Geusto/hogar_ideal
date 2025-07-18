@@ -583,3 +583,75 @@ class UsuarioController {
 ---
 
 *¡Recuerda que la práctica es la mejor manera de aprender! 🚀* 
+
+---
+
+## 🖼️ Subida de Imágenes en Formularios (MVC)
+
+### 1. Modifica el formulario HTML
+Agrega el campo para subir la imagen y el atributo enctype:
+
+```php
+<form action="index.php?controller=propiedad&action=store" method="POST" enctype="multipart/form-data">
+    <!-- ...otros campos... -->
+    <label for="portada">Imagen de portada:</label>
+    <input type="file" name="portada" id="portada" accept="image/*" required>
+    <!-- ...otros campos... -->
+    <button type="submit">Guardar</button>
+</form>
+```
+
+### 2. Procesa la imagen en el controlador
+
+```php
+if (isset($_FILES['portada']) && $_FILES['portada']['error'] === UPLOAD_ERR_OK) {
+    $nombreArchivo = uniqid() . '_' . basename($_FILES['portada']['name']);
+    $rutaDestino = 'uploads/' . $nombreArchivo;
+    $tipoArchivo = strtolower(pathinfo($rutaDestino, PATHINFO_EXTENSION));
+    $tiposPermitidos = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    if (in_array($tipoArchivo, $tiposPermitidos)) {
+        if (move_uploaded_file($_FILES['portada']['tmp_name'], $rutaDestino)) {
+            $data['portada'] = $rutaDestino;
+        } else {
+            $data['portada'] = null;
+        }
+    } else {
+        $data['portada'] = null;
+    }
+} else {
+    $data['portada'] = null;
+}
+```
+
+### 3. Guarda la ruta en la base de datos
+
+```php
+public function create($data) {
+    $sql = "INSERT INTO propiedad (tipo, direccion, habitaciones, banos, superficie, precio, estado, portada, id_cliente_vendedor, id_agente)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $this->pdo->prepare($sql);
+    return $stmt->execute([
+        $data['tipo'],
+        $data['direccion'],
+        $data['habitaciones'],
+        $data['banos'],
+        $data['superficie'],
+        $data['precio'],
+        $data['estado'],
+        $data['portada'],
+        $data['id_cliente_vendedor'],
+        $data['id_agente']
+    ]);
+}
+```
+
+### 4. Muestra la imagen en la vista
+
+```php
+<img src="<?php echo htmlspecialchars($propiedad['portada']); ?>" alt="Portada" style="max-width:200px;">
+```
+
+### 5. Crea la carpeta de uploads
+Asegúrate de que exista la carpeta `uploads/` en la raíz de tu proyecto y que tenga permisos de escritura.
+
+--- 

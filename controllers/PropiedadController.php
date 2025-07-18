@@ -46,7 +46,26 @@ class PropiedadController {
                 'id_cliente_vendedor' => $_POST['id_cliente_vendedor'] ?? 1,
                 'id_agente' => $_POST['id_agente'] ?? 1
             ];
-            
+
+            // Procesar imagen de portada
+            if (isset($_FILES['portada']) && $_FILES['portada']['error'] === UPLOAD_ERR_OK) {
+                $nombreArchivo = uniqid() . '_' . basename($_FILES['portada']['name']);
+                $rutaDestino = 'uploads/' . $nombreArchivo;
+                $tipoArchivo = strtolower(pathinfo($rutaDestino, PATHINFO_EXTENSION));
+                $tiposPermitidos = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+                if (in_array($tipoArchivo, $tiposPermitidos)) {
+                    if (move_uploaded_file($_FILES['portada']['tmp_name'], $rutaDestino)) {
+                        $data['portada'] = $rutaDestino;
+                    } else {
+                        $data['portada'] = null;
+                    }
+                } else {
+                    $data['portada'] = null;
+                }
+            } else {
+                $data['portada'] = null;
+            }
+
             if ($this->propiedadModel->create($data)) {
                 header('Location: index.php?controller=propiedad&action=index&success=1');
                 exit;
@@ -85,7 +104,24 @@ class PropiedadController {
                 'id_cliente_vendedor' => $_POST['id_cliente_vendedor'] ?? 1,
                 'id_agente' => $_POST['id_agente'] ?? 1
             ];
-            
+
+            // Obtener la portada actual
+            $propiedadActual = $this->propiedadModel->getById($id);
+            $data['portada'] = $propiedadActual['portada'] ?? null;
+
+            // Procesar imagen de portada si se sube una nueva
+            if (isset($_FILES['portada']) && $_FILES['portada']['error'] === UPLOAD_ERR_OK) {
+                $nombreArchivo = uniqid() . '_' . basename($_FILES['portada']['name']);
+                $rutaDestino = 'uploads/' . $nombreArchivo;
+                $tipoArchivo = strtolower(pathinfo($rutaDestino, PATHINFO_EXTENSION));
+                $tiposPermitidos = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+                if (in_array($tipoArchivo, $tiposPermitidos)) {
+                    if (move_uploaded_file($_FILES['portada']['tmp_name'], $rutaDestino)) {
+                        $data['portada'] = $rutaDestino;
+                    }
+                }
+            }
+
             if ($this->propiedadModel->update($id, $data)) {
                 header('Location: index.php?controller=propiedad&action=index&success=2');
                 exit;

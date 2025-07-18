@@ -23,7 +23,7 @@
 
         <!-- Formulario -->
         <div class="bg-white rounded-lg shadow-md p-8">
-            <form method="POST" action="index.php?controller=propiedad&action=update&id=<?php echo $propiedad['id_propiedad']; ?>">
+            <form method="POST" action="index.php?controller=propiedad&action=update&id=<?php echo $propiedad['id_propiedad']; ?>" enctype="multipart/form-data">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Información básica -->
                     <div class="md:col-span-2">
@@ -97,6 +97,19 @@
                             value="<?php echo htmlspecialchars($propiedad['direccion']); ?>"
                             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Calle, número, colonia">
+                    </div>
+                    
+                    <!-- Imagen de portada -->
+                    <div class="md:col-span-2 mt-8 mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Imagen de portada (fachada)</h3>
+                        <?php if (!empty($propiedad['portada'])): ?>
+                            <div class="mb-2">
+                                <img src="<?php echo htmlspecialchars($propiedad['portada']); ?>" alt="Portada actual" style="max-width: 200px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                                <div class="text-xs text-gray-500">Portada actual</div>
+                            </div>
+                        <?php endif; ?>
+                        <input type="file" id="portada" name="portada" accept="image/*" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <div class="text-xs text-gray-500 mt-1">Si seleccionas una nueva imagen, reemplazará la actual.</div>
                     </div>
                     
                     <!-- Relaciones -->

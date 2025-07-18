@@ -44,17 +44,24 @@
         <!-- Acciones rápidas -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             <a href="index.php?controller=propiedad&action=index" 
-              class="bg-blue-500 hover:bg-blue-600 text-white p-8 rounded-lg font-semibold transition-colors text-center">
+            class="bg-blue-500 hover:bg-blue-600 text-white p-8 rounded-lg font-semibold transition-colors text-center">
                 <i class="fas fa-home text-4xl mb-4"></i>
                 <div class="text-xl mb-2">Gestionar Propiedades</div>
                 <div class="text-sm opacity-90">Crear, editar y administrar propiedades</div>
             </a>
             
             <a href="index.php?controller=cliente&action=index" 
-              class="bg-green-500 hover:bg-green-600 text-white p-8 rounded-lg font-semibold transition-colors text-center">
+            class="bg-green-500 hover:bg-green-600 text-white p-8 rounded-lg font-semibold transition-colors text-center">
                 <i class="fas fa-users text-4xl mb-4"></i>
                 <div class="text-xl mb-2">Gestionar Clientes</div>
                 <div class="text-sm opacity-90">Administrar información de clientes</div>
+            </a>
+
+            <a href="index.php?controller=agente&action=index" 
+            class="bg-indigo-500 hover:bg-indigo-600 text-white p-8 rounded-lg font-semibold transition-colors text-center">
+                <i class="fas fa-users text-4xl mb-4"></i>
+                <div class="text-xl mb-2">Gestionar Agentes</div>
+                <div class="text-sm opacity-90">Administrar información de agentes</div>
             </a>
         </div>
     </div>

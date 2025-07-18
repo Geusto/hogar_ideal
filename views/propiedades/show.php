@@ -35,6 +35,13 @@
             </span>
         </div>
 
+        <!-- Mostrar portada si existe -->
+        <?php if (!empty($propiedad['portada'])): ?>
+            <div class="mb-6">
+                <img src="<?php echo htmlspecialchars($propiedad['portada']); ?>" alt="Portada de la propiedad" style="max-width: 400px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            </div>
+        <?php endif; ?>
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Información principal -->
             <div class="lg:col-span-2">

@@ -115,6 +115,9 @@
             <?php else: ?>
                 <?php foreach ($propiedades as $propiedad): ?>
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                        <?php if (!empty($propiedad['portada'])): ?>
+                            <img src="<?php echo htmlspecialchars($propiedad['portada']); ?>" alt="Portada" style="width:100%; max-height:180px; object-fit:cover;">
+                        <?php endif; ?>
                         <div class="p-6">
                             <div class="flex justify-between items-start mb-4">
                                 <h3 class="text-xl font-semibold text-gray-800"><?php echo ucfirst($propiedad['tipo']); ?> en <?php echo htmlspecialchars($propiedad['direccion']); ?></h3>

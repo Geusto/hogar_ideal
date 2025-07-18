@@ -48,6 +48,6 @@ if (file_exists($controllerFile)) {
     }
 } else {
     // Controlador no encontrado, mostrar página de inicio
-    include 'views/home/index.php';
+    include 'views/errors/404.php';
 }
 ?>
