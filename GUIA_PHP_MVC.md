@@ -204,21 +204,21 @@ class PropiedadController {
   public function index() {
     $propiedades = $this->propiedadModel->getAll();
     include 'views/propiedades/index.php';
-    }
+  }
     
-    public function create() {
-      if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $data = [
-          'titulo' => $_POST['titulo'],
-            'precio' => $_POST['precio']
-            ];
+  public function create() {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $data = [
+        'titulo' => $_POST['titulo'],
+        'precio' => $_POST['precio']
+      ];
             
-            if ($this->propiedadModel->create($data)) {
-              header('Location: index.php?controller=propiedad&action=index');
-            }
-        }
-      include 'views/propiedades/create.php';
+      if ($this->propiedadModel->create($data)) {
+        header('Location: index.php?controller=propiedad&action=index');
+      }
     }
+    include 'views/propiedades/create.php';
+  }
 }
 ```
 
@@ -359,6 +359,50 @@ function logError($mensaje) {
 }
 ```
 
+### 5. Sintaxis Alternativa en Vistas
+Cuando mezclas HTML y PHP en archivos de vista, es recomendable usar la **sintaxis alternativa** para mayor legibilidad:
+
+```php
+<!-- Sintaxis alternativa (RECOMENDADA para vistas) -->
+<?php foreach ($items as $item): ?>
+    <div class="item">
+        <h3><?php echo htmlspecialchars($item['nombre']); ?></h3>
+        <p><?php echo htmlspecialchars($item['descripcion']); ?></p>
+    </div>
+<?php endforeach; ?>
+
+<!-- Sintaxis tradicional (con llaves) -->
+<?php foreach ($items as $item) { ?>
+    <div class="item">
+        <h3><?php echo htmlspecialchars($item['nombre']); ?></h3>
+        <p><?php echo htmlspecialchars($item['descripcion']); ?></p>
+    </div>
+<?php } ?>
+```
+
+**¿Por qué usar sintaxis alternativa?**
+- **Mejor legibilidad**: Es más fácil distinguir HTML de PHP
+- **Menos errores**: No hay confusión con las llaves `{}`
+- **Estándar en vistas**: Es la forma recomendada para archivos que mezclan HTML y PHP
+
+**Otras estructuras con sintaxis alternativa:**
+```php
+// IF
+<?php if ($condicion): ?>
+    <div>Contenido</div>
+<?php endif; ?>
+
+// FOR
+<?php for ($i = 0; $i < 10; $i++): ?>
+    <div>Item <?php echo $i; ?></div>
+<?php endfor; ?>
+
+// WHILE
+<?php while ($condicion): ?>
+    <div>Contenido</div>
+<?php endwhile; ?>
+```
+
 ---
 
 ## 📝 Ejemplos Prácticos
@@ -369,114 +413,114 @@ function logError($mensaje) {
 class Usuario {
   private $pdo;
     
-    public function __construct() {
-      global $pdo;
-      $this->pdo = $pdo;
-    }
+  public function __construct() {
+    global $pdo;
+    $this->pdo = $pdo;
+  }
     
-    public function getAll() {
-      $stmt = $this->pdo->query("SELECT * FROM usuarios");
-      return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+  public function getAll() {
+    $stmt = $this->pdo->query("SELECT * FROM usuarios");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
     
-    public function getById($id) {
-      $stmt = $this->pdo->prepare("SELECT * FROM usuarios WHERE id = ?");
-      $stmt->execute([$id]);
-      return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
+  public function getById($id) {
+    $stmt = $this->pdo->prepare("SELECT * FROM usuarios WHERE id = ?");
+    $stmt->execute([$id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
     
-    public function create($data) {
-      $sql = "INSERT INTO usuarios (nombre, email) VALUES (?, ?)";
-      $stmt = $this->pdo->prepare($sql);
-      return $stmt->execute([$data['nombre'], $data['email']]);
-    }
+  public function create($data) {
+    $sql = "INSERT INTO usuarios (nombre, email) VALUES (?, ?)";
+    $stmt = $this->pdo->prepare($sql);
+    return $stmt->execute([$data['nombre'], $data['email']]);
+  }
     
-    public function update($id, $data) {
-      $sql = "UPDATE usuarios SET nombre = ?, email = ? WHERE id = ?";
-      $stmt = $this->pdo->prepare($sql);
-      return $stmt->execute([$data['nombre'], $data['email'], $id]);
-    }
+  public function update($id, $data) {
+    $sql = "UPDATE usuarios SET nombre = ?, email = ? WHERE id = ?";
+    $stmt = $this->pdo->prepare($sql);
+    return $stmt->execute([$data['nombre'], $data['email'], $id]);
+  }
     
-    public function delete($id) {
-      $stmt = $this->pdo->prepare("DELETE FROM usuarios WHERE id = ?");
-      return $stmt->execute([$id]);
-    }
+  public function delete($id) {
+    $stmt = $this->pdo->prepare("DELETE FROM usuarios WHERE id = ?");
+    return $stmt->execute([$id]);
+  }
 }
 ```
 
 ### 2. Controlador Completo
 ```php
 class UsuarioController {
-    private $usuarioModel;
+  private $usuarioModel;
     
-    public function __construct() {
-      $this->usuarioModel = new Usuario();
-    }
+  public function __construct() {
+    $this->usuarioModel = new Usuario();
+  }
     
-    // Listar usuarios
-    public function index() {
-      $usuarios = $this->usuarioModel->getAll();
-      include 'views/usuarios/index.php';
-    }
+  // Listar usuarios
+  public function index() {
+    $usuarios = $this->usuarioModel->getAll();
+    include 'views/usuarios/index.php';
+  }
     
-    // Mostrar formulario de creación
-    public function create() {
-      include 'views/usuarios/create.php';
-    }
+  // Mostrar formulario de creación
+  public function create() {
+    include 'views/usuarios/create.php';
+  }
     
-    // Guardar nuevo usuario
-    public function store() {
-      if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $data = [
-          'nombre' => $_POST['nombre'] ?? '',
-          'email' => $_POST['email'] ?? ''
-        ];
+  // Guardar nuevo usuario
+  public function store() {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $data = [
+        'nombre' => $_POST['nombre'] ?? '',
+        'email' => $_POST['email'] ?? ''
+      ];
         
-        if ($this->usuarioModel->create($data)) {
-          header('Location: index.php?controller=usuario&action=index&success=1');
-        } else {
-          header('Location: index.php?controller=usuario&action=create&error=1');
-        }
-        exit;
-    }
-    }
-    
-    // Mostrar formulario de edición
-    public function edit($id) {
-      $usuario = $this->usuarioModel->getById($id);
-      if (!$usuario) {
-        header('Location: index.php?controller=usuario&action=index&error=not_found');
-          exit;
-      }
-      include 'views/usuarios/edit.php';
-    }
-    
-    // Actualizar usuario
-    public function update($id) {
-      if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-          $data = [
-            'nombre' => $_POST['nombre'] ?? '',
-            'email' => $_POST['email'] ?? ''
-          ];
-          
-          if ($this->usuarioModel->update($id, $data)) {
-            header('Location: index.php?controller=usuario&action=index&success=2');
-          } else {
-            header('Location: index.php?controller=usuario&action=edit&id=' . $id . '&error=1');
-          }
-          exit;
-      }
-    }
-    
-    // Eliminar usuario
-    public function delete($id) {
-      if ($this->usuarioModel->delete($id)) {
-        header('Location: index.php?controller=usuario&action=index&success=3');
+      if ($this->usuarioModel->create($data)) {
+        header('Location: index.php?controller=usuario&action=index&success=1');
       } else {
-        header('Location: index.php?controller=usuario&action=index&error=delete_failed');
+        header('Location: index.php?controller=usuario&action=create&error=1');
       }
       exit;
     }
+  }
+    
+  // Mostrar formulario de edición
+  public function edit($id) {
+    $usuario = $this->usuarioModel->getById($id);
+    if (!$usuario) {
+      header('Location: index.php?controller=usuario&action=index&error=not_found');
+      exit;
+    }
+    include 'views/usuarios/edit.php';
+  }
+    
+  // Actualizar usuario
+  public function update($id) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $data = [
+        'nombre' => $_POST['nombre'] ?? '',
+        'email' => $_POST['email'] ?? ''
+      ];
+        
+      if ($this->usuarioModel->update($id, $data)) {
+        header('Location: index.php?controller=usuario&action=index&success=2');
+      } else {
+        header('Location: index.php?controller=usuario&action=edit&id=' . $id . '&error=1');
+      }
+      exit;
+    }
+  }
+    
+  // Eliminar usuario
+  public function delete($id) {
+    if ($this->usuarioModel->delete($id)) {
+      header('Location: index.php?controller=usuario&action=index&success=3');
+    } else {
+      header('Location: index.php?controller=usuario&action=index&error=delete_failed');
+    }
+    exit;
+  }
 }
 ```
 
@@ -583,75 +627,3 @@ class UsuarioController {
 ---
 
 *¡Recuerda que la práctica es la mejor manera de aprender! 🚀* 
-
----
-
-## 🖼️ Subida de Imágenes en Formularios (MVC)
-
-### 1. Modifica el formulario HTML
-Agrega el campo para subir la imagen y el atributo enctype:
-
-```php
-<form action="index.php?controller=propiedad&action=store" method="POST" enctype="multipart/form-data">
-    <!-- ...otros campos... -->
-    <label for="portada">Imagen de portada:</label>
-    <input type="file" name="portada" id="portada" accept="image/*" required>
-    <!-- ...otros campos... -->
-    <button type="submit">Guardar</button>
-</form>
-```
-
-### 2. Procesa la imagen en el controlador
-
-```php
-if (isset($_FILES['portada']) && $_FILES['portada']['error'] === UPLOAD_ERR_OK) {
-    $nombreArchivo = uniqid() . '_' . basename($_FILES['portada']['name']);
-    $rutaDestino = 'uploads/' . $nombreArchivo;
-    $tipoArchivo = strtolower(pathinfo($rutaDestino, PATHINFO_EXTENSION));
-    $tiposPermitidos = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-    if (in_array($tipoArchivo, $tiposPermitidos)) {
-        if (move_uploaded_file($_FILES['portada']['tmp_name'], $rutaDestino)) {
-            $data['portada'] = $rutaDestino;
-        } else {
-            $data['portada'] = null;
-        }
-    } else {
-        $data['portada'] = null;
-    }
-} else {
-    $data['portada'] = null;
-}
-```
-
-### 3. Guarda la ruta en la base de datos
-
-```php
-public function create($data) {
-    $sql = "INSERT INTO propiedad (tipo, direccion, habitaciones, banos, superficie, precio, estado, portada, id_cliente_vendedor, id_agente)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    $stmt = $this->pdo->prepare($sql);
-    return $stmt->execute([
-        $data['tipo'],
-        $data['direccion'],
-        $data['habitaciones'],
-        $data['banos'],
-        $data['superficie'],
-        $data['precio'],
-        $data['estado'],
-        $data['portada'],
-        $data['id_cliente_vendedor'],
-        $data['id_agente']
-    ]);
-}
-```
-
-### 4. Muestra la imagen en la vista
-
-```php
-<img src="<?php echo htmlspecialchars($propiedad['portada']); ?>" alt="Portada" style="max-width:200px;">
-```
-
-### 5. Crea la carpeta de uploads
-Asegúrate de que exista la carpeta `uploads/` en la raíz de tu proyecto y que tenga permisos de escritura.
-
---- 

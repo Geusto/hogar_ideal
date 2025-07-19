@@ -40,27 +40,41 @@ Un sistema completo de gestión inmobiliaria desarrollado en PHP siguiendo el pa
 ```
 hogar ideal/
 ├── config/
-│   └── database.php          # Configuración de base de datos
+│   └── database.php              # Configuración de base de datos
 ├── controllers/
-│   ├── HomeController.php     # Controlador del dashboard
-│   └── PropiedadController.php # Controlador de propiedades
+│   ├── HomeController.php         # Controlador del dashboard
+│   ├── PropiedadController.php    # Controlador de propiedades
+│   ├── ClienteController.php      # Controlador de clientes
+│   └── AgenteController.php       # Controlador de agentes
 ├── models/
-│   ├── Cliente.php           # Modelo de clientes
-│   └── Propiedad.php         # Modelo de propiedades
+│   ├── Propiedad.php             # Modelo de propiedades
+│   ├── Cliente.php               # Modelo de clientes
+│   ├── Agente.php                # Modelo de agentes
+│   └── Venta.php                 # Modelo de ventas
 ├── views/
+│   ├── layouts/
+│   │   └── main.php              # Layout principal
+│   ├── errors/
+│   │   └── 404.php               # Página de error 404
 │   ├── home/
-│   │   └── index.php         # Dashboard principal
-│   └── propiedades/
-│       ├── index.php         # Lista de propiedades
-│       ├── create.php        # Formulario de creación
-│       ├── edit.php          # Formulario de edición
-│       └── show.php          # Vista detallada
+│   │   └── index.php             # Dashboard principal
+│   ├── propiedades/
+│   │   ├── index.php             # Lista de propiedades
+│   │   ├── create.php            # Formulario de creación
+│   │   ├── edit.php              # Formulario de edición
+│   │   └── show.php              # Vista detallada
+│   ├── clientes/
+│   │   └── index.php             # Lista de clientes
+│   └── agentes/
+│       └── index.php             # Lista de agentes
 ├── includes/
-│   └── functions.php         # Funciones auxiliares
+│   └── functions.php             # Funciones auxiliares
+├── uploads/                      # Carpeta para archivos subidos
 ├── db/
-│   └── hogar_ideal.sql       # Estructura de base de datos
-├── index.php                 # Enrutador principal
-└── README.md                 # Este archivo
+│   └── hogar_ideal.sql           # Estructura de base de datos
+├── .htaccess                     # Configuración de Apache
+├── index.php                     # Enrutador principal
+└── README.md                     # Este archivo
 ```
 
 ## 🚀 Instalación
@@ -160,6 +174,30 @@ try {
 - **Confirmación:** Requiere confirmación antes de eliminar
 
 ## 🎯 Funcionalidades Implementadas
+
+### ✅ Sistema de Layouts
+- **Layout principal:** `views/layouts/main.php`
+- **Output buffering:** Sistema para evitar duplicación de HTML
+- **Navegación consistente:** Header y footer unificados
+- **Responsive design:** Compatible con móviles y desktop
+
+### ✅ Subida de Imágenes
+- **Campo portada:** Imagen de fachada para propiedades
+- **Validación de archivos:** Tipos permitidos (jpg, jpeg, png, gif, webp)
+- **Carpeta uploads:** Almacenamiento seguro de imágenes
+- **Visualización:** Muestra de imágenes en listado y detalles
+
+### ✅ Funciones Auxiliares
+- **Validación de datos:** Limpieza y sanitización de entrada
+- **Mensajes de feedback:** Sistema de alertas con Tailwind CSS
+- **Formateo de precios:** Función para mostrar precios formateados
+- **Validación de email y teléfono:** Funciones de validación
+
+### ✅ Configuración de Seguridad
+- **Archivo .htaccess:** Protección de archivos sensibles
+- **Prepared statements:** Prevención de SQL injection
+- **Validación de entrada:** Sanitización de datos de usuario
+- **Escape de salida:** Prevención de XSS
 
 ### ✅ Refactorización MVC Completa
 
