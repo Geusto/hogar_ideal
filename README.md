@@ -25,7 +25,32 @@ Un sistema completo de gestión inmobiliaria desarrollado en PHP siguiendo el pa
 - **Validación de formularios** con feedback visual
 - **Mensajes de confirmación** para acciones críticas
 - **Dashboard con estadísticas** en tiempo real
+## ✨ Características
 
+- **Gestión completa de propiedades** (CRUD)
+- **Sistema de filtros avanzados** por estado y tipo
+- **Búsqueda en tiempo real** en propiedades
+- **Interfaz moderna y responsive** con Tailwind CSS
+- **Patrón MVC** para código organizado y mantenible
+- **Validación de formularios** con feedback visual
+- **Mensajes de confirmación** para acciones críticas
+- **Dashboard con estadísticas** en tiempo real
+
+->
+
+## ✨ Características
+
+- **Gestión completa de propiedades** (CRUD)
+- **Sistema de filtros avanzados** por estado y tipo
+- **Búsqueda en tiempo real** en propiedades
+- **Interfaz moderna y responsive** con Tailwind CSS
+- **Patrón MVC** para código organizado y mantenible
+- **Validación de formularios** con feedback visual
+- **Mensajes de confirmación** para acciones críticas
+- **Dashboard con estadísticas** en tiempo real
+- **Sistema de URLs híbrido** (tradicional + amigables)
+- **Funciones helper** para generación de URLs y redirecciones
+- **Enrutador centralizado** con validación de seguridad
 ## 🛠️ Tecnologías Utilizadas
 
 - **Backend:** PHP 8.1+
@@ -34,6 +59,8 @@ Un sistema completo de gestión inmobiliaria desarrollado en PHP siguiendo el pa
 - **Framework CSS:** Tailwind CSS 2.2.19
 - **Iconos:** Font Awesome 6.0.0
 - **Patrón:** MVC (Model-View-Controller)
+- **Servidor Web:** Apache con mod_rewrite
+- **URLs:** Sistema híbrido (tradicional + amigables)
 
 ## 📁 Estructura del Proyecto
 
@@ -45,7 +72,8 @@ hogar ideal/
 │   ├── HomeController.php         # Controlador del dashboard
 │   ├── PropiedadController.php    # Controlador de propiedades
 │   ├── ClienteController.php      # Controlador de clientes
-│   └── AgenteController.php       # Controlador de agentes
+│   ├── AgenteController.php       # Controlador de agentes
+│   └── VentaController.php        # Controlador de ventas
 ├── models/
 │   ├── Propiedad.php             # Modelo de propiedades
 │   ├── Cliente.php               # Modelo de clientes
@@ -53,7 +81,8 @@ hogar ideal/
 │   └── Venta.php                 # Modelo de ventas
 ├── views/
 │   ├── layouts/
-│   │   └── main.php              # Layout principal
+│   │   ├── header.php            # Header del sitio
+│   │   └── footer.php            # Footer del sitio
 │   ├── errors/
 │   │   └── 404.php               # Página de error 404
 │   ├── home/
@@ -68,12 +97,12 @@ hogar ideal/
 │   └── agentes/
 │       └── index.php             # Lista de agentes
 ├── includes/
-│   └── functions.php             # Funciones auxiliares
+│   └── functions.php             # Funciones auxiliares y helpers
 ├── uploads/                      # Carpeta para archivos subidos
 ├── db/
 │   └── hogar_ideal.sql           # Estructura de base de datos
-├── .htaccess                     # Configuración de Apache
-├── index.php                     # Enrutador principal
+├── .htaccess                     # Configuración de Apache (URLs amigables)
+├── index.php                     # Enrutador principal MVC
 └── README.md                     # Este archivo
 ```
 
@@ -83,6 +112,7 @@ hogar ideal/
 
 - PHP 8.1 o superior
 - MySQL 8.0 o superior
+- Apache con mod_rewrite habilitado
 - Servidor web (Apache/Nginx) o servidor local (XAMPP, Laragon, etc.)
 
 ### Pasos de Instalación
@@ -100,8 +130,13 @@ hogar ideal/
 3. **Configurar la conexión**
    - Editar `config/database.php` con tus credenciales
 
-4. **Acceder al sistema**
+4. **Verificar configuración de Apache**
+   - Asegurar que mod_rewrite esté habilitado
+   - El archivo `.htaccess` debe estar en la raíz del proyecto
+
+5. **Acceder al sistema**
    - Navegar a `http://localhost/hogar-ideal`
+   - Probar URLs amigables: `http://localhost/hogar-ideal/propiedades`
 
 ## ⚙️ Configuración
 
@@ -127,13 +162,86 @@ try {
 
 ## 📖 Uso
 
-### Navegación Principal
+### 🎯 Sistema de URLs
+
+El sistema soporta **dos tipos de URLs** para máxima flexibilidad:
+
+#### **1. URLs con Parámetros GET (Tradicional)**
+```
+http://localhost/hogar-ideal/index.php?controller=propiedad&action=index
+http://localhost/hogar-ideal/index.php?controller=propiedad&action=create
+http://localhost/hogar-ideal/index.php?controller=propiedad&action=edit&id=5
+```
+
+#### **2. URLs Amigables (Pretty URLs)**
+```
+http://localhost/hogar-ideal/propiedades
+http://localhost/hogar-ideal/propiedades/crear
+http://localhost/hogar-ideal/propiedades/5/editar
+http://localhost/hogar-ideal/clientes
+http://localhost/hogar-ideal/agentes/3/editar
+```
+
+### 🔧 Funciones Helper para URLs
+
+#### **Generación de URLs**
+```php
+// URL tradicional
+url('propiedad', 'index')                    // index.php?controller=propiedad&action=index
+url('propiedad', 'create')                   // index.php?controller=propiedad&action=create
+url('propiedad', 'edit', 5)                  // index.php?controller=propiedad&action=edit&id=5
+
+// URL amigable (requiere .htaccess)
+prettyUrl('propiedad', 'index')              // propiedades
+prettyUrl('propiedad', 'create')             // propiedades/crear
+prettyUrl('propiedad', 'edit', 5)            // propiedades/5/editar
+```
+
+#### **Redirecciones**
+```php
+// Redirigir a otra página
+redirect('propiedad', 'index');
+redirect('propiedad', 'create');
+redirect('propiedad', 'edit', 5);
+```
+
+#### **Obtención de Parámetros**
+```php
+// Parámetros GET
+$controller = getParam('controller', 'home');
+$action = getParam('action', 'index');
+$id = getParam('id');
+
+// Parámetros POST
+$nombre = postParam('nombre', '');
+$email = postParam('email', '');
+```
+
+### 🗺️ Mapeo de Controladores
+
+El sistema utiliza un **mapeo centralizado** de controladores:
+
+```php
+$controllers = [
+    'home' => 'HomeController',
+    'propiedad' => 'PropiedadController',
+    'propiedades' => 'PropiedadController', // Alias para URLs amigables
+    'cliente' => 'ClienteController',
+    'clientes' => 'ClienteController', // Alias para URLs amigables
+    'agente' => 'AgenteController',
+    'agentes' => 'AgenteController', // Alias para URLs amigables
+    'venta' => 'VentaController',
+    'ventas' => 'VentaController' // Alias para URLs amigables
+];
+```
+
+### 📋 Navegación Principal
 
 - **Dashboard:** `index.php` - Panel principal con estadísticas
 - **Propiedades:** `index.php?controller=propiedad&action=index` - Gestión de propiedades
 - **Clientes:** `index.php?controller=cliente&action=index` - Gestión de clientes
 
-### Gestión de Propiedades
+### 🏠 Gestión de Propiedades
 
 #### Listar Propiedades
 - **URL:** `index.php?controller=propiedad&action=index`
@@ -198,6 +306,42 @@ try {
 - **Prepared statements:** Prevención de SQL injection
 - **Validación de entrada:** Sanitización de datos de usuario
 - **Escape de salida:** Prevención de XSS
+
+### ✅ Sistema de URLs y Enrutamiento
+
+#### **Enrutador Principal (`index.php`)**
+- **Punto de entrada único:** Todas las peticiones pasan por aquí
+- **Mapeo dinámico:** Conecta URLs con controladores
+- **Validación de seguridad:** Verifica controladores y métodos permitidos
+- **Manejo de errores:** Páginas 404 personalizadas
+- **Flexibilidad:** Soporta URLs tradicionales y amigables
+
+#### **Configuración de URLs Amigables (`.htaccess`)**
+```apache
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+```
+- **Redirección automática:** Todas las URLs van a `index.php`
+- **Protección de archivos:** Permite acceso solo a archivos necesarios
+- **URLs limpias:** Elimina parámetros GET de la URL visible
+
+#### **Funciones Helper (`includes/functions.php`)**
+- **`url()`:** Genera URLs tradicionales con parámetros
+- **`prettyUrl()`:** Genera URLs amigables
+- **`redirect()`:** Redirecciones con una sola función
+- **`getParam()` / `postParam()`:** Obtención segura de parámetros
+- **`isPost()` / `isGet()`:** Verificación del método HTTP
+- **`e()`:** Escape HTML para prevenir XSS
+- **`formatPrice()` / `formatDate()`:** Formateo de datos
+
+#### **Ventajas del Sistema de URLs**
+- **SEO mejorado:** URLs descriptivas y amigables
+- **Mantenibilidad:** Cambios centralizados en funciones helper
+- **Seguridad:** Validación y sanitización automática
+- **Experiencia de usuario:** URLs fáciles de recordar
+- **Flexibilidad:** Soporte para ambos tipos de URLs
 
 ### ✅ Refactorización MVC Completa
 

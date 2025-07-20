@@ -11,11 +11,11 @@ ob_start();
             <p class="text-gray-600">Detalles de la propiedad</p>
         </div>
         <div class="flex space-x-3">
-            <a href="index.php?controller=propiedad&action=edit&id=<?php echo $propiedad['id_propiedad']; ?>" 
+            <a href="<?= url('propiedad', 'edit', $propiedad['id_propiedad']) ?>" 
             class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
                 <i class="fas fa-edit mr-2"></i>Editar
             </a>
-            <a href="index.php?controller=propiedad&action=index" 
+            <a href="<?= url('propiedad', 'index') ?>" 
             class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
                 <i class="fas fa-arrow-left mr-2"></i>Volver
             </a>
@@ -141,16 +141,16 @@ ob_start();
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Acciones</h3>
                 <div class="space-y-3">
-                    <a href="index.php?controller=propiedad&action=edit&id=<?php echo $propiedad['id_propiedad']; ?>" 
+                    <a href="<?= url('propiedad', 'edit', $propiedad['id_propiedad']) ?>" 
                     class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-center block">
                         <i class="fas fa-edit mr-2"></i>Editar Propiedad
                     </a>
-                    <a href="index.php?controller=propiedad&action=delete&id=<?php echo $propiedad['id_propiedad']; ?>" 
+                    <a href="<?= url('propiedad', 'delete', $propiedad['id_propiedad']) ?>" 
                     class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-center block"
                     onclick="return confirm('¿Estás seguro de que quieres eliminar esta propiedad?')">
                         <i class="fas fa-trash mr-2"></i>Eliminar Propiedad
                     </a>
-                    <a href="index.php?controller=propiedad&action=index" 
+                    <a href="<?= url('propiedad', 'index') ?>" 
                     class="w-full bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-center block">
                         <i class="fas fa-list mr-2"></i>Ver Todas
                     </a>

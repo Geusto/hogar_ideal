@@ -18,23 +18,23 @@
                     </a>
                 </div>
                 <div class="hidden md:flex space-x-6">
-                    <a href="index.php?controller=home&action=index" 
+                    <a href="<?= url('home', 'index') ?>" 
                        class="text-gray-700 hover:text-blue-600 transition-colors">
                         <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
                     </a>
-                    <a href="index.php?controller=propiedad&action=index" 
+                    <a href="<?= url('propiedad', 'index') ?>" 
                        class="text-gray-700 hover:text-blue-600 transition-colors">
                         <i class="fas fa-home mr-1"></i>Propiedades
                     </a>
-                    <a href="index.php?controller=cliente&action=index" 
+                    <a href="<?= url('cliente', 'index') ?>" 
                        class="text-gray-700 hover:text-blue-600 transition-colors">
                         <i class="fas fa-users mr-1"></i>Clientes
                     </a>
-                    <a href="index.php?controller=agente&action=index" 
+                    <a href="<?= url('agente', 'index') ?>" 
                        class="text-gray-700 hover:text-blue-600 transition-colors">
                         <i class="fas fa-user-tie mr-1"></i>Agentes
                     </a>
-                    <a href="index.php?controller=venta&action=index" 
+                    <a href="<?= url('venta', 'index') ?>" 
                        class="text-gray-700 hover:text-blue-600 transition-colors">
                         <i class="fas fa-chart-line mr-1"></i>Ventas
                     </a>

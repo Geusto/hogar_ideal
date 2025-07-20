@@ -11,11 +11,11 @@ ob_start();
             <p class="text-gray-600">Gestiona todas las propiedades del sistema</p>
         </div>
         <div class="flex gap-4">
-        <a href="index.php?controller=home&action=index" 
+        <a href="<?= url('home', 'index') ?>" 
         class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
             <i class="fas fa-arrow-left mr-2"></i>Volver
         </a>
-        <a href="index.php?controller=propiedad&action=create" 
+        <a href="<?= url('propiedad', 'create') ?>" 
         class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
             <i class="fas fa-plus mr-2"></i>Nueva Propiedad
         </a>
@@ -85,7 +85,7 @@ ob_start();
         <!-- Botón para limpiar filtros -->
         <?php if (isset($_GET['estado']) || isset($_GET['tipo']) || isset($_GET['q'])): ?>
             <div class="mt-4">
-                <a href="index.php?controller=propiedad&action=index" 
+                <a href="<?= url('propiedad', 'index') ?>" 
                 class="text-blue-500 hover:text-blue-700 text-sm font-medium">
                     <i class="fas fa-times mr-1"></i>Limpiar filtros
                 </a>
@@ -139,15 +139,15 @@ ob_start();
                         
                         <div class="flex justify-between items-center">
                             <div class="flex space-x-2">
-                                <a href="index.php?controller=propiedad&action=show&id=<?php echo $propiedad['id_propiedad']; ?>" 
+                                <a href="<?= url('propiedad', 'show', $propiedad['id_propiedad']) ?>" 
                                    class="text-blue-500 hover:text-blue-700">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="index.php?controller=propiedad&action=edit&id=<?php echo $propiedad['id_propiedad']; ?>" 
+                                <a href="<?= url('propiedad', 'edit', $propiedad['id_propiedad']) ?>" 
                                    class="text-green-500 hover:text-green-700">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="index.php?controller=propiedad&action=delete&id=<?php echo $propiedad['id_propiedad']; ?>" 
+                                <a href="<?= url('propiedad', 'delete', $propiedad['id_propiedad']) ?>" 
                                    class="text-red-500 hover:text-red-700"
                                    onclick="return confirm('¿Estás seguro de que quieres eliminar esta propiedad?')">
                                     <i class="fas fa-trash"></i>
@@ -167,7 +167,7 @@ ob_start();
         const estado = document.getElementById('filtroEstado').value;
         const tipo = document.getElementById('filtroTipo').value;
         
-        let url = 'index.php?controller=propiedad&action=index';
+        let url = '<?= url('propiedad', 'index') ?>';
         
         if (estado) {
             url += '&estado=' + estado;

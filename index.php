@@ -3,18 +3,40 @@
 require_once 'config/database.php';
 require_once 'includes/functions.php';
 
+// Función para procesar URLs amigables
+function parseUrl($url) {
+    $url = trim($url, '/');
+    $parts = explode('/', $url);
+    
+    $controller = $parts[0] ?? 'home';
+    $action = $parts[1] ?? 'index';
+    $id = $parts[2] ?? null;
+    
+    return [$controller, $action, $id];
+}
+
 // Obtener parámetros de la URL
+$url = $_GET['url'] ?? '';
 $controller = $_GET['controller'] ?? 'home';
 $action = $_GET['action'] ?? 'index';
 $id = $_GET['id'] ?? null;
+
+// Si hay URL amigable, procesarla
+if (!empty($url)) {
+    [$controller, $action, $id] = parseUrl($url);
+}
 
 // Mapeo de controladores
 $controllers = [
     'home' => 'HomeController',
     'propiedad' => 'PropiedadController',
+    'propiedades' => 'PropiedadController', // Alias para URLs amigables
     'cliente' => 'ClienteController',
+    'clientes' => 'ClienteController', // Alias para URLs amigables
     'agente' => 'AgenteController',
-    'venta' => 'VentaController'
+    'agentes' => 'AgenteController', // Alias para URLs amigables
+    'venta' => 'VentaController',
+    'ventas' => 'VentaController' // Alias para URLs amigables
 ];
 
 // Verificar si el controlador existe

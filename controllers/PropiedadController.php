@@ -67,11 +67,9 @@ class PropiedadController {
             }
 
             if ($this->propiedadModel->create($data)) {
-                header('Location: index.php?controller=propiedad&action=index&success=1');
-                exit;
+                redirect('propiedad', 'index');
             } else {
-                header('Location: index.php?controller=propiedad&action=create&error=1');
-                exit;
+                redirect('propiedad', 'create');
             }
         }
     }
@@ -83,8 +81,7 @@ class PropiedadController {
         $clientesVendedores = $this->propiedadModel->getClientesVendedores();
         
         if (!$propiedad) {
-            header('Location: index.php?controller=propiedad&action=index&error=not_found');
-            exit;
+            redirect('propiedad', 'index');
         }
         
         include 'views/propiedades/edit.php';
@@ -123,11 +120,9 @@ class PropiedadController {
             }
 
             if ($this->propiedadModel->update($id, $data)) {
-                header('Location: index.php?controller=propiedad&action=index&success=2');
-                exit;
+                redirect('propiedad', 'index');
             } else {
-                header('Location: index.php?controller=propiedad&action=edit&id=' . $id . '&error=1');
-                exit;
+                redirect('propiedad', 'edit', $id);
             }
         }
     }
@@ -135,11 +130,9 @@ class PropiedadController {
     // Eliminar propiedad
     public function delete($id) {
         if ($this->propiedadModel->delete($id)) {
-            header('Location: index.php?controller=propiedad&action=index&success=3');
-            exit;
+            redirect('propiedad', 'index');
         } else {
-            header('Location: index.php?controller=propiedad&action=index&error=delete_failed');
-            exit;
+            redirect('propiedad', 'index');
         }
     }
     
@@ -148,8 +141,7 @@ class PropiedadController {
         $propiedad = $this->propiedadModel->getById($id);
         
         if (!$propiedad) {
-            header('Location: index.php?controller=propiedad&action=index&error=not_found');
-            exit;
+            redirect('propiedad', 'index');
         }
         
         include 'views/propiedades/show.php';

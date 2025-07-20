@@ -11,12 +11,12 @@ ob_start();
             <p class="text-gray-600">Gestiona todos los agentes del sistema</p>
         </div>
         <div class="flex gap-4">
-        <a href="index.php?controller=home&action=index" 
-        class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+        <a href="<?= url('home', 'index') ?>" 
+            class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
             <i class="fas fa-arrow-left mr-2"></i>Volver
         </a>
-        <a href="index.php?controller=agente&action=create" 
-        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+        <a href="<?= url('agente', 'create') ?>" 
+          class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
             <i class="fas fa-plus mr-2"></i>Nuevo Agente
         </a>
         </div>
