@@ -19,34 +19,39 @@ return $datos;
  * Función para mostrar mensajes de éxito o error con Tailwind
  */
 function mostrarMensaje($mensaje, $tipo = 'info') {
+  $icon = '';
   $bgColor = 'bg-blue-100';
   $textColor = 'text-blue-800';
-  $borderColor = 'border-blue-200';
-  
+  $borderColor = 'border-blue-500';
+
   switch($tipo) {
     case 'exito':
+      $icon = '<svg class="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>';
       $bgColor = 'bg-green-100';
-      $textColor = 'text-green-800';
-      $borderColor = 'border-green-200';
+      $textColor = 'text-green-700';
+      $borderColor = 'border-green-500';
       break;
     case 'error':
+      $icon = '<svg class="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
       $bgColor = 'bg-red-100';
-      $textColor = 'text-red-800';
-      $borderColor = 'border-red-200';
+      $textColor = 'text-red-700';
+      $borderColor = 'border-red-500';
       break;
     case 'advertencia':
+      $icon = '<svg class="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01" /></svg>';
       $bgColor = 'bg-yellow-100';
-      $textColor = 'text-yellow-800';
-      $borderColor = 'border-yellow-200';
+      $textColor = 'text-yellow-700';
+      $borderColor = 'border-yellow-500';
+      break;
+    default:
+      $icon = '<svg class="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01" /></svg>';
+      $bgColor = 'bg-blue-100';
+      $textColor = 'text-blue-700';
+      $borderColor = 'border-blue-500';
       break;
   }
-  
-  return "<div class='$bgColor $textColor $borderColor border px-4 py-3 rounded relative mb-4' role='alert'>
-    <span class='block sm:inline'>$mensaje</span>
-            <button type='button' class='absolute top-0 bottom-0 right-0 px-4 py-3' onclick='this.parentElement.remove()'>
-                  <i class='fas fa-times'></i>
-              </button>
-          </div>";
+  return "<div class='flex items-center $bgColor $borderColor border-l-4 $textColor p-4 mb-4 shadow-md' role='alert' id='alert-msg'>$icon<span class='font-semibold'>" . htmlspecialchars($mensaje) . "</span></div>
+  <script>setTimeout(() => { const alert = document.getElementById('alert-msg'); if(alert) alert.style.display = 'none'; }, 4000);</script>";
 }
 
 /**
@@ -165,8 +170,13 @@ function prettyUrl($controller, $action = 'index', $id = null) {
  * @param string $action Nombre de la acción
  * @param int|null $id ID del elemento (opcional)
  */
-function redirect($controller, $action = 'index', $id = null) {
+function redirect($controller, $action = 'index', $id = null, $params = []) {
     $url = url($controller, $action, $id);
+    // Si hay parámetros adicionales, agrégalos como query string
+    if (!empty($params) && is_array($params)) {
+        $query = http_build_query($params);
+        $url .= (strpos($url, '?') === false ? '?' : '&') . $query;
+    }
     header("Location: {$url}");
     exit;
 }

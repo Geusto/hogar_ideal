@@ -24,26 +24,27 @@ class Agente {
     
     // Crear nuevo agente
     public function create($data) {
-        $sql = "INSERT INTO agente (nombre_completo, email, telefono, especialidad) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO agente (nombre_completo, email, telefono, zona_asignada, activo) VALUES (?, ?, ?, ?, ?)";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
             $data['nombre_completo'],
             $data['email'],
             $data['telefono'],
-            $data['especialidad']
+            $data['zona_asignada'],
+            $data['activo']
         ]);
     }
     
     // Actualizar agente
     public function update($id, $data) {
-        $sql = "UPDATE agente SET nombre_completo = ?, email = ?, telefono = ?, especialidad = ? WHERE id_agente = ?";
+        $sql = "UPDATE agente SET nombre_completo = ?, email = ?, telefono = ?, zona_asignada = ?, activo = ? WHERE id_agente = ?";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
             $data['nombre_completo'],
             $data['email'],
             $data['telefono'],
-            $data['especialidad'],
-            $id
+            $data['zona_asignada'],
+            $data['activo'],
         ]);
     }
     
@@ -53,22 +54,41 @@ class Agente {
         return $stmt->execute([$id]);
     }
     
+    // Eliminar o inactivar agente según relaciones
+    public function eliminarOInactivar($id) {
+        // Verificar si el agente tiene propiedades asociadas
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) as total FROM propiedad WHERE id_agente = ?");
+        $stmt->execute([$id]);
+        $total = $stmt->fetch()['total'];
+        if ($total > 0) {
+            // Marcar como inactivo
+            $stmt = $this->pdo->prepare("UPDATE agente SET activo = 0 WHERE id_agente = ?");
+            $stmt->execute([$id]);
+            return 'inactivado';
+        } else {
+            // Eliminar físicamente
+            $stmt = $this->pdo->prepare("DELETE FROM agente WHERE id_agente = ?");
+            $stmt->execute([$id]);
+            return 'eliminado';
+        }
+    }
+    
     // Contar total de agentes
     public function count() {
         $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM agente");
         return $stmt->fetch()['total'];
     }
     
-    // Contar agentes por especialidad
-    public function countByEspecialidad($especialidad) {
-        $stmt = $this->pdo->prepare("SELECT COUNT(*) as total FROM agente WHERE especialidad = ?");
-        $stmt->execute([$especialidad]);
+    // Contar agentes por zona asignada
+    public function countByZonaAsignada($zona_asignada) {
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) as total FROM agente WHERE zona_asignada = ?");
+        $stmt->execute([$zona_asignada]);
         return $stmt->fetch()['total'];
     }
     
     // Buscar agentes
     public function search($query) {
-        $sql = "SELECT * FROM agente WHERE nombre_completo LIKE ? OR email LIKE ? OR especialidad LIKE ? ORDER BY nombre_completo";
+        $sql = "SELECT * FROM agente WHERE nombre_completo LIKE ? OR email LIKE ? OR zona_asignada LIKE ? ORDER BY nombre_completo";
         $searchTerm = "%$query%";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$searchTerm, $searchTerm, $searchTerm]);
