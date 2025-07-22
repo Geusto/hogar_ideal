@@ -20,7 +20,7 @@ ob_start();
         <div class="bg-white rounded-lg shadow-md p-6 text-center">
             <i class="fas fa-users text-4xl text-green-500 mb-4"></i>
             <h3 class="text-2xl font-bold text-gray-800 mb-2"><?php echo $totalClientes; ?></h3>
-            <p class="text-gray-600">Clientes Registradoss</p>
+            <p class="text-gray-600">Clientes Registrados</p>
         </div>
         
         <div class="bg-white rounded-lg shadow-md p-6 text-center">
@@ -45,7 +45,7 @@ ob_start();
             <div class="text-sm opacity-90">Crear, editar y administrar propiedades</div>
         </a>
         
-        <a href="<?= url('cliente', 'index') ?>" 
+        <a href="<?= url('cliente', 'viewCliente') ?>" 
             class="bg-green-500 hover:bg-green-600 text-white p-8 rounded-lg font-semibold transition-colors text-center">
             <i class="fas fa-users text-4xl mb-4"></i>
             <div class="text-xl mb-2">Gestionar Clientes</div>
