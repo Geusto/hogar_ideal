@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jul 13, 2025 at 11:24 PM
+-- Generation Time: Jul 22, 2025 at 11:23 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.31
 
@@ -32,17 +32,18 @@ CREATE TABLE `agente` (
   `nombre_completo` varchar(100) COLLATE utf8mb4_spanish2_ci NOT NULL,
   `telefono` varchar(20) COLLATE utf8mb4_spanish2_ci NOT NULL,
   `email` varchar(100) COLLATE utf8mb4_spanish2_ci DEFAULT NULL,
-  `zona_asignada` varchar(50) COLLATE utf8mb4_spanish2_ci NOT NULL
+  `zona_asignada` varchar(50) COLLATE utf8mb4_spanish2_ci NOT NULL,
+  `activo` tinyint(1) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
 
 --
 -- Dumping data for table `agente`
 --
 
-INSERT INTO `agente` (`id_agente`, `nombre_completo`, `telefono`, `email`, `zona_asignada`) VALUES
-(1, 'María García', '098111111', 'maria.garcia@hogarideal.com', 'Punta del Este'),
-(2, 'Juan López', '098222222', 'juan.lopez@hogarideal.com', 'Montevideo Centro'),
-(3, 'Pedro Martínez', '098333333', 'pedro.martinez@hogarideal.com', 'Carrasco');
+INSERT INTO `agente` (`id_agente`, `nombre_completo`, `telefono`, `email`, `zona_asignada`, `activo`) VALUES
+(1, 'María García', '098111111', 'maria.garcia@hogarideal.com', 'Punta del Este', 1),
+(2, 'Juan López', '098222222', 'juan.lopez@hogarideal.com', 'Montevideo Centro', 0),
+(3, 'Pedro Martínez', '098333333', 'pedro.martinez@hogarideal.com', 'Carrasco', 1);
 
 -- --------------------------------------------------------
 
@@ -82,6 +83,7 @@ CREATE TABLE `propiedad` (
   `banos` int DEFAULT NULL,
   `superficie` decimal(10,2) NOT NULL,
   `precio` decimal(12,2) NOT NULL,
+  `portada` varchar(255) COLLATE utf8mb4_spanish2_ci DEFAULT NULL,
   `estado` enum('disponible','vendida') COLLATE utf8mb4_spanish2_ci DEFAULT 'disponible',
   `id_cliente_vendedor` int NOT NULL,
   `id_agente` int NOT NULL
@@ -91,10 +93,12 @@ CREATE TABLE `propiedad` (
 -- Dumping data for table `propiedad`
 --
 
-INSERT INTO `propiedad` (`id_propiedad`, `tipo`, `direccion`, `habitaciones`, `banos`, `superficie`, `precio`, `estado`, `id_cliente_vendedor`, `id_agente`) VALUES
-(1, 'casa', 'Calle Los Pinos 123', 4, 3, '180.50', '350000.00', 'vendida', 1, 1),
-(2, 'apartamento', 'Av. 18 de Julio 567', 2, 1, '75.25', '120000.00', 'disponible', 3, 2),
-(3, 'terreno', 'Av. Bolivia 890', NULL, NULL, '300.00', '200000.00', 'disponible', 3, 3);
+INSERT INTO `propiedad` (`id_propiedad`, `tipo`, `direccion`, `habitaciones`, `banos`, `superficie`, `precio`, `portada`, `estado`, `id_cliente_vendedor`, `id_agente`) VALUES
+(1, 'casa', 'Calle Los Pinos 123', 4, 3, '180.50', '350000.00', NULL, 'vendida', 1, 1),
+(2, 'apartamento', 'Av. 18 de Julio 567', 2, 1, '75.25', '120000.00', NULL, 'disponible', 3, 2),
+(3, 'terreno', 'Av. Bolivia 890', 2, 1, '300.00', '200000.00', NULL, 'disponible', 3, 3),
+(4, 'casa', 'calle 45 #1a-24', 2, 2, '200.00', '89000000.00', NULL, 'vendida', 1, 1),
+(5, 'apartamento', 'Edificio trin Apto 12a', 2, 2, '100.00', '450000.00', 'uploads/6879b718c5263_cat.png', 'disponible', 3, 1);
 
 -- --------------------------------------------------------
 
@@ -197,7 +201,7 @@ ALTER TABLE `visita`
 -- AUTO_INCREMENT for table `agente`
 --
 ALTER TABLE `agente`
-  MODIFY `id_agente` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_agente` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `cliente`
@@ -209,7 +213,7 @@ ALTER TABLE `cliente`
 -- AUTO_INCREMENT for table `propiedad`
 --
 ALTER TABLE `propiedad`
-  MODIFY `id_propiedad` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_propiedad` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `venta`
