@@ -20,7 +20,7 @@ ob_start();
         <div class="bg-white rounded-lg shadow-md p-6 text-center">
             <i class="fas fa-users text-4xl text-green-500 mb-4"></i>
             <h3 class="text-2xl font-bold text-gray-800 mb-2"><?php echo $totalClientes; ?></h3>
-            <p class="text-gray-600">Clientes Registrados</p>
+            <p class="text-gray-600">Clientes Registradoss</p>
         </div>
         
         <div class="bg-white rounded-lg shadow-md p-6 text-center">
