@@ -24,25 +24,8 @@ ob_start();
 
     <!-- Mensajes de éxito/error -->
     <?php
-    if (isset($_GET['success'])) {
-        $success = $_GET['success'];
-        $mensaje = '';
-        switch($success) {
-            case '1': $mensaje = 'Propiedad creada exitosamente.'; break;
-            case '2': $mensaje = 'Propiedad actualizada exitosamente.'; break;
-            case '3': $mensaje = 'Propiedad eliminada exitosamente.'; break;
-        }
-        if ($mensaje) echo mostrarMensaje($mensaje, 'exito');
-    }
-    if (isset($_GET['error'])) {
-        $error = $_GET['error'];
-        $mensaje = '';
-        switch($error) {
-            case 'not_found': $mensaje = 'Propiedad no encontrada.'; break;
-            case 'delete_failed': $mensaje = 'Error al eliminar la propiedad.'; break;
-            default: $mensaje = 'Ha ocurrido un error.'; break;
-        }
-        if ($mensaje) echo mostrarMensaje($mensaje, 'error');
+    if (isset($_GET['msg'])) {
+        echo mostrarMensaje($_GET['msg'], $_GET['tipo'] ?? 'info');
     }
     ?>
 
@@ -69,18 +52,18 @@ ob_start();
                 <option value="vendida" <?php echo (isset($_GET['estado']) && $_GET['estado'] === 'vendida') ? 'selected' : ''; ?>>Vendida</option>
             </select>
             
-            <select id="filtroTipo" onchange="aplicarFiltro()" 
+            <select id="filtroTipo" name="tipo_propiedad" onchange="aplicarFiltro()" 
                     class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Todos los tipos</option>
-                <option value="casa" <?php echo (isset($_GET['tipo']) && $_GET['tipo'] === 'casa') ? 'selected' : ''; ?>>Casa</option>
-                <option value="apartamento" <?php echo (isset($_GET['tipo']) && $_GET['tipo'] === 'apartamento') ? 'selected' : ''; ?>>Apartamento</option>
-                <option value="terreno" <?php echo (isset($_GET['tipo']) && $_GET['tipo'] === 'terreno') ? 'selected' : ''; ?>>Terreno</option>
-                <option value="local" <?php echo (isset($_GET['tipo']) && $_GET['tipo'] === 'local') ? 'selected' : ''; ?>>Local Comercial</option>
+                <option value="casa" <?php echo (isset($_GET['tipo_propiedad']) && $_GET['tipo_propiedad'] === 'casa') ? 'selected' : ''; ?>>Casa</option>
+                <option value="apartamento" <?php echo (isset($_GET['tipo_propiedad']) && $_GET['tipo_propiedad'] === 'apartamento') ? 'selected' : ''; ?>>Apartamento</option>
+                <option value="terreno" <?php echo (isset($_GET['tipo_propiedad']) && $_GET['tipo_propiedad'] === 'terreno') ? 'selected' : ''; ?>>Terreno</option>
+                <option value="local" <?php echo (isset($_GET['tipo_propiedad']) && $_GET['tipo_propiedad'] === 'local') ? 'selected' : ''; ?>>Local Comercial</option>
             </select>
         </div>
         
         <!-- Botón para limpiar filtros -->
-        <?php if (isset($_GET['estado']) || isset($_GET['tipo']) || isset($_GET['q'])): ?>
+        <?php if (isset($_GET['estado']) || isset($_GET['tipo_propiedad']) || isset($_GET['q'])): ?>
             <div class="mt-4">
                 <a href="<?= url('propiedad', 'index') ?>" 
                 class="text-blue-500 hover:text-blue-700 text-sm font-medium">
@@ -97,7 +80,7 @@ ob_start();
                 <i class="fas fa-home text-6xl text-gray-300 mb-4"></i>
                 <h3 class="text-xl font-semibold text-gray-600 mb-2">No hay propiedades</h3>
                 <p class="text-gray-500">
-                    <?php if (isset($_GET['q']) || isset($_GET['estado']) || isset($_GET['tipo'])): ?>
+                    <?php if (isset($_GET['q']) || isset($_GET['estado']) || isset($_GET['tipo_propiedad'])): ?>
                         No se encontraron propiedades con los filtros aplicados
                     <?php else: ?>
                         Comienza agregando tu primera propiedad
@@ -171,7 +154,7 @@ ob_start();
         }
         
         if (tipo) {
-            url += '&tipo=' + tipo;
+            url += '&tipo_propiedad=' + tipo;
         }
         
         window.location.href = url;

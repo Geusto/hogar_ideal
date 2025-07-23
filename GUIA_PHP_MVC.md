@@ -283,6 +283,42 @@ try {
 
 ---
 
+## 🚨 Sistema de Mensajes de Alerta (Toasts)
+
+### ¿Cómo funciona?
+- El controlador redirige tras una acción (crear, editar, eliminar) usando la función `redirect`, pasando los parámetros `msg` (mensaje) y `tipo` (tipo de alerta: exito, error, advertencia, info).
+- En la vista, se llama a la función `mostrarMensaje` para mostrar el mensaje como un toast animado en la parte inferior derecha.
+- El parámetro `tipo` es **solo para el mensaje de alerta**. Para filtros de búsqueda, usa `tipo_propiedad`.
+
+### Ejemplo en el controlador:
+```php
+redirect('propiedad', 'index', null, [
+  'msg' => 'Propiedad actualizada exitosamente.',
+  'tipo' => 'exito'
+]);
+```
+
+### Ejemplo en la vista:
+```php
+if (isset($_GET['msg'])) {
+    echo mostrarMensaje($_GET['msg'], $_GET['tipo'] ?? 'info');
+}
+```
+
+### Parámetros de filtro
+- Para filtrar por tipo de propiedad, usa `tipo_propiedad` en la URL y en los formularios:
+```php
+<select name="tipo_propiedad"> ... </select>
+```
+- Así evitas conflicto con el parámetro `tipo` de los mensajes.
+
+### Ventajas
+- Mensajes visuales modernos y consistentes (toast con icono FontAwesome y color).
+- Código centralizado y fácil de mantener.
+- Sin conflictos entre filtros y mensajes.
+
+---
+
 ## ✅ Buenas Prácticas
 
 ### 1. Nomenclatura
