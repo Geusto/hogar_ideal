@@ -105,13 +105,30 @@ class AgenteController {
       'activo' => $_POST['activo'] ?? '1',
     ];
 
+    // Validar formato de teléfono
+    if (!preg_match('/^[0-9+]{8,15}$/', $data['telefono'])) {
+      $msg = 'El teléfono debe contener solo números y el símbolo +.';
+      $tipo = 'error';
+      $agente = $data;
+      include 'views/agentes/create.php';
+      return;
+    }
+
     // Validar que el email no esté en uso
     if ($this->agenteModel->emailEnUso($data['email'])) {
-      redirect('agente', 'create', null, ['msg' => 'El email ya está en uso.', 'tipo' => 'error']);
+      $msg = 'El email ya está en uso.';
+      $tipo = 'error';
+      $agente = $data;
+      include 'views/agentes/create.php';
+      return;
     }
     // Validar que el teléfono no esté en uso
     if ($this->agenteModel->telefonoEnUso($data['telefono'])) {
-      redirect('agente', 'create', null, ['msg' => 'El teléfono ya está en uso.', 'tipo' => 'error']);
+      $msg = 'El teléfono ya está en uso.';
+      $tipo = 'error';
+      $agente = $data;
+      include 'views/agentes/create.php';
+      return;
     }
 
     // Procesar imagen de perfil
@@ -136,7 +153,10 @@ class AgenteController {
     if ($this->agenteModel->create($data)) {
       redirect('agente', 'index', null, ['msg' => 'Agente creado correctamente.', 'tipo' => 'exito']);
     } else {
-      redirect('agente', 'create', null, ['msg' => 'No se pudo crear el agente.', 'tipo' => 'error']);
+      $msg = 'No se pudo crear el agente.';
+      $tipo = 'error';
+      $agente = $data;
+      include 'views/agentes/create.php';
     }
   }
 

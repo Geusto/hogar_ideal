@@ -672,3 +672,11 @@ public function index() {
 - Al eliminar un agente, su imagen de perfil también se elimina del servidor.
 - Desde el formulario de edición puedes marcar la opción "Eliminar imagen actual" para borrar la imagen de perfil del agente sin necesidad de subir una nueva.
 - Las imágenes se almacenan en la carpeta `uploads/`. 
+
+## ✅ Validaciones en el flujo de agentes
+
+- **Email y teléfono únicos:** El sistema valida que no se repita el email ni el teléfono de un agente, tanto al crear como al editar.
+- **Formato de teléfono:** Solo se aceptan números y el símbolo + (validación en el frontend con pattern y en el backend con preg_match).
+- **Persistencia de datos tras error:** Si ocurre un error de validación al crear un agente, el formulario mantiene los datos ingresados y solo muestra el mensaje de error.
+- **Feedback visual:** Todos los mensajes de error, éxito o advertencia se muestran con la función `mostrarMensaje`.
+- **Validación doble:** Se valida tanto en el frontend (HTML) como en el backend (PHP) para máxima robustez. 

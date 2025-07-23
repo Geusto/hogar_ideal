@@ -771,3 +771,32 @@ if (isset($_FILES['imagen_perfil']) && $_FILES['imagen_perfil']['error'] === UPL
 - Usa rutas relativas y la carpeta `uploads/` para almacenar imágenes.
 
 --- 
+
+---
+
+## ✅ Validaciones en el flujo de agentes
+
+- **Unicidad de email y teléfono:**
+  - Se valida en el backend que el email y el teléfono no se repitan en la base de datos.
+  - Ejemplo:
+  ```php
+  if ($this->agenteModel->emailEnUso($data['email'], $id)) { /* ... */ }
+  if ($this->agenteModel->telefonoEnUso($data['telefono'], $id)) { /* ... */ }
+  ```
+- **Formato de teléfono:**
+  - En el frontend:
+    ```html
+    <input type="tel" name="telefono" pattern="[0-9+]{8,15}" title="Solo números y el símbolo +">
+    ```
+  - En el backend:
+    ```php
+    if (!preg_match('/^[0-9+]{8,15}$/', $data['telefono'])) { /* ... */ }
+    ```
+- **Persistencia de datos tras error:**
+  - Si ocurre un error de validación al crear, el formulario mantiene los datos ingresados y muestra el mensaje de error.
+- **Feedback visual:**
+  - Se usa la función `mostrarMensaje` para mostrar mensajes de error, éxito o advertencia.
+- **Validación doble:**
+  - Se valida tanto en el frontend como en el backend para máxima robustez.
+
+--- 

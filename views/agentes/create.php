@@ -15,6 +15,14 @@ ob_start();
         </a>
     </div>
 
+    <?php
+    if (isset($msg)) {
+        echo mostrarMensaje($msg, $tipo ?? 'error');
+    } elseif (isset($_GET['msg'])) {
+        echo mostrarMensaje($_GET['msg'], $_GET['tipo'] ?? 'exito');
+    }
+    ?>
+
     <!-- Formulario -->
     <div class="bg-white rounded-lg shadow-md p-8">
         <form method="POST" action="<?= url('agente', 'store') ?>" enctype="multipart/form-data">
@@ -27,25 +35,27 @@ ob_start();
                 <div>
                     <label for="nombre_completo" class="block text-sm font-medium text-gray-700 mb-2">Nombre Completo *</label>
                     <input type="text" id="nombre_completo" name="nombre_completo" required
-                      class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value="">
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value="<?= isset($agente['nombre_completo']) ? htmlspecialchars($agente['nombre_completo']) : '' ?>">
                 </div>
                 <div>
                     <label for="telefono" class="block text-sm font-medium text-gray-700 mb-2">Teléfono *</label>
-                    <input type="text" id="telefono" name="telefono" required
-                      class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value="">
+                    <input type="tel" id="telefono" name="telefono" required
+                        pattern="[0-9+]{8,15}"
+                        title="Solo números y el símbolo +"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value="<?= isset($agente['telefono']) ? htmlspecialchars($agente['telefono']) : '' ?>">
                 </div>  
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
                     <input type="email" id="email" name="email" required
-                      class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value="">
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value="<?= isset($agente['email']) ? htmlspecialchars($agente['email']) : '' ?>">
                 </div>  
                 <div>
                     <label for="zona_asignada" class="block text-sm font-medium text-gray-700 mb-2">Zona Asignada *</label>
                     <input type="text" id="zona_asignada" name="zona_asignada" required
-                      class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" value="">
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" value="<?= isset($agente['zona_asignada']) ? htmlspecialchars($agente['zona_asignada']) : '' ?>">
                 </div>
 
                 <!-- Imagen de perfil -->
@@ -70,6 +80,7 @@ ob_start();
         </form>
     <div>
 </div>
+
 <?php 
 $content = ob_get_clean();
 include 'views/layouts/main.php';
