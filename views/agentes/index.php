@@ -33,6 +33,7 @@ ob_start();
       <table class="min-w-full bg-white rounded-lg shadow-md">
         <thead>
           <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Imagen</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
@@ -44,6 +45,15 @@ ob_start();
         <tbody>
           <?php foreach ($agentes as $agente): ?>
             <tr class="border-b hover:bg-gray-50">
+              <td class="px-6 py-4 ">
+                <?php if (!empty($agente['imagen_perfil'])): ?>
+                  <img src="<?php echo htmlspecialchars($agente['imagen_perfil']); ?>" alt="Imagen de perfil" class="object-cover w-10 h-10 rounded-full">
+                <?php else: ?>
+                  <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                    <i class="fas fa-user text-gray-400 text-lg"></i>
+                  </div>
+                <?php endif; ?>
+              </td>
               <td class="px-6 py-4 whitespace-nowrap text-gray-800 font-semibold"><?php echo ucfirst($agente['nombre_completo']); ?></td>
               <td class="px-6 py-4 whitespace-nowrap text-gray-600"><?php echo $agente['email']; ?></td>
               <td class="px-6 py-4 whitespace-nowrap text-gray-600"><?php echo $agente['telefono']; ?></td>
