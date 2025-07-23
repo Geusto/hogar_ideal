@@ -45,6 +45,7 @@ class Agente {
             $data['telefono'],
             $data['zona_asignada'],
             $data['activo'],
+            $id
         ]);
     }
     

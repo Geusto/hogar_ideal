@@ -22,24 +22,11 @@ ob_start();
         </div>
     </div>
 
-    <?php if (isset($_GET['msg'])): ?>
-      <div 
-        class="flex items-center bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 shadow-md" 
-        role="alert"
-        id="alert-msg"
-      >
-        <svg class="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-        </svg>
-        <span class="font-semibold"><?= htmlspecialchars($_GET['msg']) ?></span>
-      </div>
-      <script>
-        setTimeout(() => {
-          const alert = document.getElementById('alert-msg');
-          if(alert) alert.style.display = 'none';
-        }, 4000);
-      </script>
-    <?php endif; ?>
+    <?php
+    if (isset($_GET['msg'])) {
+      echo mostrarMensaje($_GET['msg'], $_GET['tipo'] ?? 'exito');
+    }
+    ?>
 
     <!-- Lista de agentes -->
     <div class="overflow-x-auto">

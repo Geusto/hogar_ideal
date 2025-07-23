@@ -23,31 +23,28 @@ ob_start();
     </div>
 
     <!-- Mensajes de éxito/error -->
-    <?php if (isset($_GET['success'])): ?>
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-            <?php
-            $success = $_GET['success'];
-            switch($success) {
-                case '1': echo 'Propiedad creada exitosamente.'; break;
-                case '2': echo 'Propiedad actualizada exitosamente.'; break;
-                case '3': echo 'Propiedad eliminada exitosamente.'; break;
-            }
-            ?>
-        </div>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['error'])): ?>
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            <?php
-            $error = $_GET['error'];
-            switch($error) {
-                case 'not_found': echo 'Propiedad no encontrada.'; break;
-                case 'delete_failed': echo 'Error al eliminar la propiedad.'; break;
-                default: echo 'Ha ocurrido un error.'; break;
-            }
-            ?>
-        </div>
-    <?php endif; ?>
+    <?php
+    if (isset($_GET['success'])) {
+        $success = $_GET['success'];
+        $mensaje = '';
+        switch($success) {
+            case '1': $mensaje = 'Propiedad creada exitosamente.'; break;
+            case '2': $mensaje = 'Propiedad actualizada exitosamente.'; break;
+            case '3': $mensaje = 'Propiedad eliminada exitosamente.'; break;
+        }
+        if ($mensaje) echo mostrarMensaje($mensaje, 'exito');
+    }
+    if (isset($_GET['error'])) {
+        $error = $_GET['error'];
+        $mensaje = '';
+        switch($error) {
+            case 'not_found': $mensaje = 'Propiedad no encontrada.'; break;
+            case 'delete_failed': $mensaje = 'Error al eliminar la propiedad.'; break;
+            default: $mensaje = 'Ha ocurrido un error.'; break;
+        }
+        if ($mensaje) echo mostrarMensaje($mensaje, 'error');
+    }
+    ?>
 
     <!-- Filtros y búsqueda -->
     <div class="bg-white rounded-lg shadow-md p-6 mb-6">

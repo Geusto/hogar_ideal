@@ -26,7 +26,7 @@ class AgenteController {
     $agente = $this->agenteModel->getById($id);
     
     if (!$agente) {
-        redirect('agente', 'index');
+      redirect('agente', 'index');
     }
     
     include 'views/agentes/edit.php';
@@ -45,9 +45,9 @@ class AgenteController {
         ];
 
         if ($this->agenteModel->update($id, $data)) {
-            redirect('agente', 'index');
+          redirect('agente', 'index', null, ['msg' => 'Agente actualizado correctamente.', 'tipo' => 'exito']);
         } else {
-            redirect('agente', 'edit', $id);
+          redirect('agente', 'edit', $id, ['msg' => 'No se pudo actualizar el agente.', 'tipo' => 'eliminado']);
         }
     }
   }
@@ -56,11 +56,11 @@ class AgenteController {
   public function delete($id) {
     $resultado = $this->agenteModel->eliminarOInactivar($id);
     if ($resultado === 'eliminado') {
-      redirect('agente', 'index', null, ['msg' => 'Agente eliminado correctamente.']);
+      redirect('agente', 'index', null, ['msg' => 'Agente eliminado correctamente.', 'tipo' => 'eliminado']);
     } else if ($resultado === 'inactivado') {
-      redirect('agente', 'index', null, ['msg' => 'El agente tiene propiedades asociadas y fue marcado como inactivo.']);
+      redirect('agente', 'index', null, ['msg' => 'El agente tiene propiedades asociadas y fue marcado como inactivo.', 'tipo' => 'advertencia']);
     } else {
-      redirect('agente', 'index', null, ['msg' => 'No se pudo eliminar el agente.']);
+      redirect('agente', 'index', null, ['msg' => 'No se pudo eliminar el agente.', 'tipo' => 'eliminado']);
     }
   }
 }

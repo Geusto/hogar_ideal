@@ -26,32 +26,51 @@ function mostrarMensaje($mensaje, $tipo = 'info') {
 
   switch($tipo) {
     case 'exito':
-      $icon = '<svg class="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>';
+      $icon = '<i class="fas fa-check-circle mr-2 text-green-500"></i>';
       $bgColor = 'bg-green-100';
       $textColor = 'text-green-700';
       $borderColor = 'border-green-500';
       break;
     case 'error':
-      $icon = '<svg class="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
+      $icon = '<i class="fas fa-times-circle mr-2 text-red-500"></i>';
       $bgColor = 'bg-red-100';
       $textColor = 'text-red-700';
       $borderColor = 'border-red-500';
       break;
     case 'advertencia':
-      $icon = '<svg class="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01" /></svg>';
+      $icon = '<i class="fas fa-exclamation-triangle mr-2 text-yellow-500"></i>';
       $bgColor = 'bg-yellow-100';
       $textColor = 'text-yellow-700';
       $borderColor = 'border-yellow-500';
       break;
     default:
-      $icon = '<svg class="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01" /></svg>';
+      $icon = '<i class="fas fa-info-circle mr-2 text-blue-500"></i>';
       $bgColor = 'bg-blue-100';
       $textColor = 'text-blue-700';
       $borderColor = 'border-blue-500';
       break;
   }
-  return "<div class='flex items-center $bgColor $borderColor border-l-4 $textColor p-4 mb-4 shadow-md' role='alert' id='alert-msg'>$icon<span class='font-semibold'>" . htmlspecialchars($mensaje) . "</span></div>
-  <script>setTimeout(() => { const alert = document.getElementById('alert-msg'); if(alert) alert.style.display = 'none'; }, 4000);</script>";
+
+  return "
+  <div id='toast-msg' class='fixed bottom-6 right-6 z-50 min-w-[250px] max-w-xs $bgColor $borderColor border-l-4 $textColor p-4 mb-4 shadow-lg flex items-center animate-slide-in rounded-lg' role='alert'>
+    $icon
+    <span class='font-semibold flex-1'>" . htmlspecialchars($mensaje) . "</span>
+    <button onclick=\"document.getElementById('toast-msg').style.display='none'\" class='ml-4 text-xl font-bold'>&times;</button>
+  </div>
+  <style>
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateX(100px);}
+      to { opacity: 1; transform: translateX(0);}
+    }
+    .animate-slide-in { animation: slide-in 0.5s; }
+  </style>
+  <script>
+    setTimeout(() => {
+      const toast = document.getElementById('toast-msg');
+      if(toast) toast.style.display = 'none';
+    }, 4000);
+  </script>
+  ";
 }
 
 /**
