@@ -24,20 +24,7 @@ class Agente {
     
     // Crear nuevo agente
     public function create($data) {
-        $sql = "INSERT INTO agente (nombre_completo, email, telefono, zona_asignada, activo) VALUES (?, ?, ?, ?, ?)";
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([
-            $data['nombre_completo'],
-            $data['email'],
-            $data['telefono'],
-            $data['zona_asignada'],
-            $data['activo']
-        ]);
-    }
-    
-    // Actualizar agente
-    public function update($id, $data) {
-        $sql = "UPDATE agente SET nombre_completo = ?, email = ?, telefono = ?, zona_asignada = ?, activo = ? WHERE id_agente = ?";
+        $sql = "INSERT INTO agente (nombre_completo, email, telefono, zona_asignada, activo, imagen_perfil) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
             $data['nombre_completo'],
@@ -45,6 +32,21 @@ class Agente {
             $data['telefono'],
             $data['zona_asignada'],
             $data['activo'],
+            $data['imagen_perfil']
+        ]);
+    }
+    
+    // Actualizar agente
+    public function update($id, $data) {
+        $sql = "UPDATE agente SET nombre_completo = ?, email = ?, telefono = ?, zona_asignada = ?, activo = ?, imagen_perfil = ? WHERE id_agente = ?";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            $data['nombre_completo'],
+            $data['email'],
+            $data['telefono'],
+            $data['zona_asignada'],
+            $data['activo'],
+            $data['imagen_perfil'],
             $id
         ]);
     }
@@ -94,6 +96,32 @@ class Agente {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$searchTerm, $searchTerm, $searchTerm]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Verificar si el email está en uso (opcionalmente excluyendo un id)
+    public function emailEnUso($email, $id = null) {
+        $sql = "SELECT COUNT(*) as total FROM agente WHERE email = ?";
+        $params = [$email];
+        if ($id !== null) {
+            $sql .= " AND id_agente != ?";
+            $params[] = $id;
+        }
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetch()['total'] > 0;
+    }
+
+    // Verificar si el teléfono está en uso (opcionalmente excluyendo un id)
+    public function telefonoEnUso($telefono, $id = null) {
+        $sql = "SELECT COUNT(*) as total FROM agente WHERE telefono = ?";
+        $params = [$telefono];
+        if ($id !== null) {
+            $sql .= " AND id_agente != ?";
+            $params[] = $id;
+        }
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetch()['total'] > 0;
     }
 }
 ?> 
