@@ -446,6 +446,12 @@ RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
 - Enlaces de navegación
 - Dashboard central
 
+## 📨 Sistema de mensajes de feedback
+
+- El sistema utiliza la función `mostrarMensaje` (en `includes/functions.php`) para mostrar mensajes de éxito, error o advertencia en cualquier vista.
+- Los mensajes se muestran en la parte inferior derecha y desaparecen automáticamente.
+- Se usa en formularios de creación, edición y en cualquier acción que requiera feedback visual para el usuario.
+
 ## 🗄️ Base de Datos
 
 ### Estructura de Tablas
@@ -657,22 +663,12 @@ public function index() {
 - Mantener consistencia en el nombramiento
 - Escribir código limpio y legible
 
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
-
-## 👥 Autores
-
-- **Desarrollador Principal** - [Tu Nombre]
-- **Contribuidores** - Lista de contribuidores
-
-## 📞 Soporte
-
-Para soporte técnico o preguntas sobre el proyecto:
-- Email: [tu-email@ejemplo.com]
-- Issues: [URL del repositorio]/issues
-- Documentación: [URL de la documentación]
-
----
-
 **Hogar Ideal** - Sistema de Gestión Inmobiliaria © 2024 
+
+## 👤 Gestión de imágenes de perfil de agentes
+
+- Puedes subir una imagen de perfil al crear o editar un agente.
+- Si subes una nueva imagen al editar, la anterior se elimina automáticamente del servidor.
+- Al eliminar un agente, su imagen de perfil también se elimina del servidor.
+- Desde el formulario de edición puedes marcar la opción "Eliminar imagen actual" para borrar la imagen de perfil del agente sin necesidad de subir una nueva.
+- Las imágenes se almacenan en la carpeta `uploads/`. 

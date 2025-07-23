@@ -727,3 +727,47 @@ public function eliminarOInactivar($id) {
 - Permite reactivar agentes en el futuro si es necesario.
 
 --- 
+
+---
+
+## 👤 Gestión de imágenes de perfil de agentes (Ejemplo práctico MVC)
+
+### 1. Subida y reemplazo de imagen de perfil
+- En el formulario de creación y edición de agentes, usa un campo `<input type="file" name="imagen_perfil">`.
+- El controlador procesa la subida, valida el tipo y almacena la imagen en la carpeta `uploads/`.
+- Al editar, si se sube una nueva imagen, la anterior se elimina automáticamente del servidor.
+
+```php
+// En el controlador (update)
+if (isset($_FILES['imagen_perfil']) && $_FILES['imagen_perfil']['error'] === UPLOAD_ERR_OK) {
+    if (!empty($agenteActual['imagen_perfil']) && file_exists($agenteActual['imagen_perfil'])) {
+        unlink($agenteActual['imagen_perfil']);
+    }
+    // ...subida y guardado de la nueva imagen
+}
+```
+
+### 2. Eliminación manual de la imagen
+- En el formulario de edición, agrega un checkbox para eliminar la imagen actual:
+```html
+<label><input type="checkbox" name="eliminar_imagen" value="1"> Eliminar imagen actual</label>
+```
+- El controlador elimina la imagen si el usuario lo solicita.
+
+### 3. Eliminación automática al borrar el agente
+- Al eliminar un agente, también se elimina su imagen de perfil del servidor.
+
+### 4. Visualización en la vista
+- Muestra la imagen en la lista y edición de agentes:
+```php
+<?php if (!empty($agente['imagen_perfil'])): ?>
+  <img src="<?= htmlspecialchars($agente['imagen_perfil']) ?>" alt="Imagen de perfil">
+<?php endif; ?>
+```
+
+### 5. Buenas prácticas
+- Valida el tipo de archivo antes de guardar.
+- Elimina archivos huérfanos para ahorrar espacio.
+- Usa rutas relativas y la carpeta `uploads/` para almacenar imágenes.
+
+--- 

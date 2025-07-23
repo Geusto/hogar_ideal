@@ -15,6 +15,12 @@ ob_start();
         </a>
     </div>
 
+    <?php
+    if (isset($_GET['msg'])) {
+        echo mostrarMensaje($_GET['msg'], $_GET['tipo'] ?? 'exito');
+    }
+    ?>
+
     <!-- Formulario -->
     <div class="bg-white rounded-lg shadow-md p-8">
         <form method="POST" action="<?= url('agente', 'update', $agente['id_agente']) ?>" enctype="multipart/form-data">
@@ -81,13 +87,51 @@ ob_start();
                     Cancelar
                 </a>
                 <button type="submit" 
-                    class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors" id="btn-guardar-agente" disabled>
                     <i class="fas fa-save mr-2"></i>Actualizar Agente
                 </button>
             </div>
         </form>
     <div>
 </div>
+
+<script>
+// Guardar los valores originales al cargar
+const form = document.querySelector('form');
+const original = {
+    nombre_completo: form.nombre_completo.value,
+    telefono: form.telefono.value,
+    email: form.email.value,
+    zona_asignada: form.zona_asignada.value,
+    activo: form.activo.value,
+    eliminar_imagen: form.eliminar_imagen ? form.eliminar_imagen.checked : false,
+};
+let originalImagen = null;
+const fileInput = document.getElementById('imagen_perfil');
+if (fileInput) {
+    originalImagen = fileInput.value;
+}
+
+function hayCambios() {
+    if (form.nombre_completo.value !== original.nombre_completo) return true;
+    if (form.telefono.value !== original.telefono) return true;
+    if (form.email.value !== original.email) return true;
+    if (form.zona_asignada.value !== original.zona_asignada) return true;
+    if (form.activo.value !== original.activo) return true;
+    if (form.eliminar_imagen && form.eliminar_imagen.checked !== original.eliminar_imagen) return true;
+    if (fileInput && fileInput.value !== originalImagen && fileInput.value !== '') return true;
+    return false;
+}
+
+function toggleBotonGuardar() {
+    document.getElementById('btn-guardar-agente').disabled = !hayCambios();
+}
+
+form.addEventListener('input', toggleBotonGuardar);
+if (fileInput) fileInput.addEventListener('change', toggleBotonGuardar);
+if (form.eliminar_imagen) form.eliminar_imagen.addEventListener('change', toggleBotonGuardar);
+</script>
+
 <?php 
 $content = ob_get_clean();
 include 'views/layouts/main.php';
