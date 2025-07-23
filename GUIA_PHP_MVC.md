@@ -478,8 +478,12 @@ class Usuario {
   }
     
   public function delete($id) {
-    $stmt = $this->pdo->prepare("DELETE FROM usuarios WHERE id = ?");
-    return $stmt->execute([$id]);
+    if ($this->tieneVentasAsociadas($id)) {
+        return 'venta'; // No eliminar, tiene ventas asociadas
+    }
+    $stmt = $this->pdo->prepare("DELETE FROM propiedad WHERE id_propiedad = ?");
+    $stmt->execute([$id]);
+    return 'ok';
   }
 }
 ```
@@ -663,3 +667,63 @@ class UsuarioController {
 ---
 
 *¡Recuerda que la práctica es la mejor manera de aprender! 🚀* 
+
+---
+
+## 🔗 Lógica de Negocio: Relaciones y Eliminación de Entidades
+
+### Eliminación de Propiedades
+- **No se permite eliminar una propiedad si tiene ventas asociadas.**
+- Esto protege el historial de transacciones y evita la pérdida de información importante.
+- Antes de eliminar una propiedad, el sistema ejecuta la consulta:
+
+```sql
+SELECT COUNT(*) as total FROM venta WHERE id_propiedad = ?
+```
+- Si el resultado es mayor que 0, la propiedad no se elimina y se muestra un mensaje de error al usuario.
+- Si no tiene ventas asociadas, la propiedad se elimina normalmente.
+
+### Ejemplo de lógica en el modelo:
+```php
+public function delete($id) {
+    if ($this->tieneVentasAsociadas($id)) {
+        return 'venta'; // No eliminar, tiene ventas asociadas
+    }
+    $stmt = $this->pdo->prepare("DELETE FROM propiedad WHERE id_propiedad = ?");
+    $stmt->execute([$id]);
+    return 'ok';
+}
+```
+
+### Eliminación de Agentes
+- **No se permite eliminar un agente si tiene propiedades asignadas.**
+- Si el agente tiene propiedades, se marca como inactivo (`activo = 0`) en vez de eliminarlo físicamente.
+- Esto protege la integridad de las relaciones y permite mantener la trazabilidad de las operaciones.
+- Solo se elimina físicamente un agente si no tiene ninguna propiedad asignada.
+
+#### Ejemplo de lógica en el modelo:
+```php
+public function eliminarOInactivar($id) {
+    // Verificar si el agente tiene propiedades asociadas
+    $stmt = $this->pdo->prepare("SELECT COUNT(*) as total FROM propiedad WHERE id_agente = ?");
+    $stmt->execute([$id]);
+    $total = $stmt->fetch()['total'];
+    if ($total > 0) {
+        // Marcar como inactivo
+        $stmt = $this->pdo->prepare("UPDATE agente SET activo = 0 WHERE id_agente = ?");
+        $stmt->execute([$id]);
+        return 'inactivado';
+    } else {
+        // Eliminar físicamente
+        $stmt = $this->pdo->prepare("DELETE FROM agente WHERE id_agente = ?");
+        $stmt->execute([$id]);
+        return 'eliminado';
+    }
+}
+```
+
+#### Razón de negocio
+- Así se evita perder la relación entre propiedades y agentes históricos.
+- Permite reactivar agentes en el futuro si es necesario.
+
+--- 

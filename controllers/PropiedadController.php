@@ -145,11 +145,18 @@ class PropiedadController {
     
     // Eliminar propiedad
     public function delete($id) {
-        if ($this->propiedadModel->delete($id)) {
+        $resultado = $this->propiedadModel->delete($id);
+        if ($resultado === 'ok') {
             redirect('propiedad', 'index', null, [
                 'success' => 3,
                 'msg' => 'Propiedad eliminada exitosamente.',
                 'tipo' => 'exito'
+            ]);
+        } elseif ($resultado === 'venta') {
+            redirect('propiedad', 'index', null, [
+                'error' => 'delete_failed',
+                'msg' => 'No se puede eliminar la propiedad porque tiene ventas asociadas.',
+                'tipo' => 'error'
             ]);
         } else {
             redirect('propiedad', 'index', null, [

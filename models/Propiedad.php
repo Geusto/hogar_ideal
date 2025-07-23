@@ -73,10 +73,21 @@ class Propiedad {
         ]);
     }
     
-    // Eliminar propiedad
+    // Verificar si la propiedad tiene ventas asociadas
+    public function tieneVentasAsociadas($id) {
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) as total FROM venta WHERE id_propiedad = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch()['total'] > 0;
+    }
+
+    // Eliminar propiedad solo si no tiene ventas asociadas
     public function delete($id) {
+        if ($this->tieneVentasAsociadas($id)) {
+            return 'venta'; // No eliminar, tiene ventas asociadas
+        }
         $stmt = $this->pdo->prepare("DELETE FROM propiedad WHERE id_propiedad = ?");
-        return $stmt->execute([$id]);
+        $stmt->execute([$id]);
+        return 'ok';
     }
     
     // Obtener propiedades por estado
