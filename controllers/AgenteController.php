@@ -39,7 +39,6 @@ class AgenteController {
             'nombre_completo' => $_POST['nombre_completo'] ?? '',
             'telefono' => $_POST['telefono'] ?? '',
             'email' => $_POST['email'] ?? '',
-            'password' => $_POST['password'] ?? '',
             'zona_asignada' => $_POST['zona_asignada'] ?? '',
             'activo' => $_POST['activo'] ?? '',
         ];
@@ -48,8 +47,20 @@ class AgenteController {
         $agenteActual = $this->agenteModel->getById($id);
         $data['imagen_perfil'] = $agenteActual['imagen_perfil'] ?? null;
 
+        // Eliminar imagen si el usuario lo solicita
+        if (isset($_POST['eliminar_imagen']) && $_POST['eliminar_imagen'] === '1') {
+          if (!empty($agenteActual['imagen_perfil']) && file_exists($agenteActual['imagen_perfil'])) {
+            unlink($agenteActual['imagen_perfil']);
+          }
+          $data['imagen_perfil'] = null;
+        }
+
         // Procesar imagen de perfil si se sube una nueva
         if (isset($_FILES['imagen_perfil']) && $_FILES['imagen_perfil']['error'] === UPLOAD_ERR_OK) {
+          // Elimina la imagen anterior si existe
+          if (!empty($agenteActual['imagen_perfil']) && file_exists($agenteActual['imagen_perfil'])) {
+            unlink($agenteActual['imagen_perfil']);
+          }
           $nombreArchivo = uniqid() . '_' . basename($_FILES['imagen_perfil']['name']);
           $rutaDestino = 'uploads/' . $nombreArchivo;
           $tipoArchivo = strtolower(pathinfo($rutaDestino, PATHINFO_EXTENSION));
@@ -131,8 +142,13 @@ class AgenteController {
 
   // Eliminar agente
   public function delete($id) {
+    $agente = $this->agenteModel->getById($id);
     $resultado = $this->agenteModel->eliminarOInactivar($id);
     if ($resultado === 'eliminado') {
+      // Eliminar la imagen de perfil si existe
+      if (!empty($agente['imagen_perfil']) && file_exists($agente['imagen_perfil'])) {
+        unlink($agente['imagen_perfil']);
+      }
       redirect('agente', 'index', null, ['msg' => 'Agente eliminado correctamente.', 'tipo' => 'eliminado']);
     } else if ($resultado === 'inactivado') {
       redirect('agente', 'index', null, ['msg' => 'El agente tiene propiedades asociadas y fue marcado como inactivo.', 'tipo' => 'advertencia']);

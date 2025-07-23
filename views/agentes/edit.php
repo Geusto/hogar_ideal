@@ -64,6 +64,10 @@ ob_start();
                             <img src="<?php echo htmlspecialchars($agente['imagen_perfil']); ?>" alt="Portada actual" style="max-width: 200px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
                             <div class="text-xs text-gray-500">Portada actual</div>
                         </div>
+                        <label class="flex items-center mb-2">
+                            <input type="checkbox" name="eliminar_imagen" value="1" class="mr-2">
+                            <span class="text-sm text-red-600">Eliminar imagen actual</span>
+                        </label>
                     <?php endif; ?>
                     <input type="file" id="imagen_perfil" name="imagen_perfil" accept="image/*" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <div class="text-xs text-gray-500 mt-1">Si seleccionas una nueva imagen, reemplazará la actual.</div>
@@ -77,7 +81,7 @@ ob_start();
                     Cancelar
                 </a>
                 <button type="submit" 
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
                     <i class="fas fa-save mr-2"></i>Actualizar Agente
                 </button>
             </div>
