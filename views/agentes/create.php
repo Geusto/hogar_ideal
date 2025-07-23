@@ -48,7 +48,7 @@ ob_start();
                       class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" value="">
                 </div>
 
-                <!-- Imagen de portada -->
+                <!-- Imagen de perfil -->
                 <div class="md:col-span-2 mt-8 mb-4">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Imagen de perfil</h3>
                     <input type="file" id="imagen_perfil" name="imagen_perfil" accept="image/*" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">

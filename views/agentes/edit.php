@@ -56,7 +56,7 @@ ob_start();
                     </select>
                 </div>
 
-                <!-- Imagen de portada -->
+                <!-- Imagen de perfil -->
                 <div class="md:col-span-2 mt-8 mb-4">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Imagen de perfil</h3>
                     <?php if (!empty($agente['imagen_perfil'])): ?>
@@ -65,7 +65,7 @@ ob_start();
                             <div class="text-xs text-gray-500">Portada actual</div>
                         </div>
                     <?php endif; ?>
-                    <input type="file" id="portada" name="portada" accept="image/*" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="file" id="imagen_perfil" name="imagen_perfil" accept="image/*" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <div class="text-xs text-gray-500 mt-1">Si seleccionas una nueva imagen, reemplazará la actual.</div>
                 </div>
             </div>
