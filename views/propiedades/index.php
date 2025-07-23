@@ -120,16 +120,18 @@ ob_start();
                         <div class="flex justify-between items-center">
                             <div class="flex space-x-2">
                                 <a href="<?= url('propiedad', 'show', $propiedad['id_propiedad']) ?>" 
-                                   class="text-blue-500 hover:text-blue-700">
+                                    class="text-blue-500 hover:text-blue-700">
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 <a href="<?= url('propiedad', 'edit', $propiedad['id_propiedad']) ?>" 
-                                   class="text-green-500 hover:text-green-700">
+                                    class="text-green-500 hover:text-green-700">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="<?= url('propiedad', 'delete', $propiedad['id_propiedad']) ?>" 
-                                   class="text-red-500 hover:text-red-700"
-                                   onclick="return confirm('¿Estás seguro de que quieres eliminar esta propiedad?')">
+                                <a href="#" 
+                                    class="text-red-500 hover:text-red-700 btn-eliminar-propiedad"
+                                    data-url="<?= url('propiedad', 'delete', $propiedad['id_propiedad']) ?>"
+                                    data-direccion="<?= htmlspecialchars($propiedad['direccion']) ?>"
+                                    title="Eliminar">
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </div>
@@ -141,6 +143,16 @@ ob_start();
         <?php endif; ?>
     </div>
 </div>
+
+<?php
+// Incluir el modal de confirmación reutilizable para propiedades
+$modal_id = 'modal-eliminar-propiedad';
+$mensaje = '¿Estás seguro de que quieres eliminar esta propiedad? Esta acción no se puede deshacer.';
+$texto_confirmar = 'Eliminar';
+$texto_cancelar = 'Cancelar';
+$url_accion = '';
+include 'views/layouts/modal_confirmacion.php';
+?>
 
 <script>
     function aplicarFiltro() {
@@ -159,6 +171,34 @@ ob_start();
         
         window.location.href = url;
     }
+
+    // Modal de confirmación para eliminar propiedad
+    let urlEliminarPropiedad = '';
+    let modalPropiedad = document.getElementById('modal-eliminar-propiedad');
+    document.querySelectorAll('.btn-eliminar-propiedad').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            urlEliminarPropiedad = this.getAttribute('data-url');
+            // Si quieres personalizar el mensaje con la dirección, puedes hacerlo aquí
+            // modalPropiedad.querySelector('p').textContent = `¿Estás seguro de que quieres eliminar la propiedad en ${this.getAttribute('data-direccion')}? Esta acción no se puede deshacer.`;
+            showModal('modal-eliminar-propiedad');
+        });
+    });
+    document.querySelectorAll('.btn-cancelar-modal').forEach(btn => {
+        btn.addEventListener('click', function() {
+            let modalId = this.getAttribute('data-modal');
+            hideModal(modalId);
+            urlEliminarPropiedad = '';
+        });
+    });
+    document.querySelectorAll('.btn-confirmar-modal').forEach(btn => {
+        btn.addEventListener('click', function() {
+            let url = urlEliminarPropiedad || this.getAttribute('data-url');
+            if(url) {
+                window.location.href = url;
+            }
+        });
+    });
 </script>
 
 <?php 

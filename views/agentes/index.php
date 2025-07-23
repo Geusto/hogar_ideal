@@ -53,7 +53,7 @@ ob_start();
                 <a href="<?= url('agente', 'edit', $agente['id_agente']) ?>" class="text-blue-500 hover:text-blue-700 mr-3" title="Editar">
                   <i class="fas fa-edit"></i>
                 </a>
-                <a href="<?= url('agente', 'delete', $agente['id_agente']) ?>" class="text-red-500 hover:text-red-700" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar este agente?');">
+                <a href="#" class="text-red-500 hover:text-red-700 btn-eliminar-agente" data-url="<?= url('agente', 'delete', $agente['id_agente']) ?>" title="Eliminar" data-nombre="<?= htmlspecialchars(ucfirst($agente['nombre_completo'])) ?>">
                   <i class="fas fa-trash-alt"></i>
                 </a>
               </td>
@@ -63,6 +63,45 @@ ob_start();
       </table>
     </div>
 </div>
+
+<?php
+// Incluir el modal de confirmación reutilizable
+$modal_id = 'modal-eliminar-agente';
+$mensaje = '¿Estás seguro de que quieres eliminar este agente? Esta acción no se puede deshacer.';
+$texto_confirmar = 'Eliminar';
+$texto_cancelar = 'Cancelar';
+$url_accion = '';
+include 'views/layouts/modal_confirmacion.php';
+?>
+
+<script>
+  let urlEliminarAgente = '';
+  let modal = document.getElementById('modal-eliminar-agente');
+  document.querySelectorAll('.btn-eliminar-agente').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      urlEliminarAgente = this.getAttribute('data-url');
+      // Si quieres personalizar el mensaje con el nombre, puedes hacerlo aquí
+      // modal.querySelector('p').textContent = `¿Estás seguro de que quieres eliminar al agente ${this.getAttribute('data-nombre')}? Esta acción no se puede deshacer.`;
+      showModal('modal-eliminar-agente');
+    });
+  });
+  document.querySelectorAll('.btn-cancelar-modal').forEach(btn => {
+    btn.addEventListener('click', function() {
+      let modalId = this.getAttribute('data-modal');
+      hideModal(modalId);
+      urlEliminarAgente = '';
+    });
+  });
+  document.querySelectorAll('.btn-confirmar-modal').forEach(btn => {
+    btn.addEventListener('click', function() {
+      let url = urlEliminarAgente || this.getAttribute('data-url');
+      if(url) {
+        window.location.href = url;
+      }
+    });
+  });
+</script>
 
 <?php 
 $content = ob_get_clean();
