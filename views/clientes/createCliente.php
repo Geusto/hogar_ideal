@@ -26,13 +26,13 @@ ob_start();
                 </div>
                 
                 <div>
-                    <label for="nombre_completo" class="block text-sm font-medium text-gray-700 mb-2">Nombre Completo *</label>
+                    <label for="nombre_completo" class="block text-sm font-medium text-gray-700 mb-2">Nombre Completo</label>
                     <input type="text" id="nombre_completo" name="nombre_completo" required
                       class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Nombre y Apellido">
                 </div>
                 <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
                     <input type="email" id="email" name="email" required
                       class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Correo Electrónico">
@@ -43,20 +43,37 @@ ob_start();
                       class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Número de Teléfono">
                 </div>
-
-                 <!-- Características -->
-                <div class="md:col-span-2">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Características</h3>
+                <div>
+                    <label for="direccion" class="block text-sm font-medium text-gray-700 mb-2">Dirección</label>
+                    <input type="text" id="direccion" name="direccion"
+                      class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Dirección del Cliente">
                 </div>
                 <div>
-                    <label for="tipo" class="block text-sm font-medium text-gray-700 mb-2">Tipo de Cliente *</label>
+                    <label for="tipo" class="block text-sm font-medium text-gray-700 mb-2">Tipo de Cliente</label>
                     <select id="tipo" name="tipo" required
                             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="cliente">Cliente</option>
-                        <option value="vendedor">Vendedor</option>
-                        <option value="ambos">Ambos</option>
+                        <option value="Comprador">Comprador</option>
+                        <option value="Vendedor">Vendedor</option>
+                        <option value="Ambos">Ambos</option>
                     </select>
                 </div>
+                <div>
+                    <label for="idTipoDocumento" class="block text-sm font-medium text-gray-700 mb-2">Tipo de Documento</label>
+                    <select id="idTipoDocumento" name="idTipoDocumento" required
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="1">Cédula de Ciudadanía (CC)</option>
+                        <option value="2">Cédula de Extranjería (CE)</option>
+                        <option value="3">Pasaporte (PP)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="documento" class="block text-sm font-medium text-gray-700 mb-2">Número de Documento</label>
+                    <input type="text" id="documento" name="documento" required
+                      class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Número de Documento">
+                </div>
+                
                 
                 <!-- Botones -->
                 <div class="flex justify-end space-x-4 mt-8 pt-6 border t border-gray-200">
@@ -70,20 +87,7 @@ ob_start();
                     </button>
                 </div>
             </div>
-                
-                <div>
-                    <label for="estado" class="block text-sm font-medium text-gray-700 mb-2">Estado *</label>
-                    <select id="estado" name="estado" required
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="disponible">Disponible</option>
-                        <option value="vendida">Vendida</option>
-                    </select>
-                </div>
-                
-               
-                
-                
-                
+ 
         </form>
     </div>
 </div>
