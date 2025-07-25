@@ -473,18 +473,15 @@ CREATE TABLE `propiedad` (
 );
 ```
 
-#### **Tabla: cliente**
+#### **Tabla: tipo_documento**
 ```sql
-CREATE TABLE `cliente` (
-  `id_cliente` int NOT NULL AUTO_INCREMENT,
-  `nombre_completo` varchar(100) NOT NULL,
-  `direccion` varchar(200) NOT NULL,
-  `telefono` varchar(20) NOT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `tipo` enum('Comprador','Vendedor','Ambos') NOT NULL,
-  PRIMARY KEY (`id_cliente`)
+CREATE TABLE `tipo_documento` (
+  `idTipoDocumento` int NOT NULL AUTO_INCREMENT,
+  `descripcion` varchar(50) NOT NULL,
+  PRIMARY KEY (`idTipoDocumento`)
 );
 ```
+- Relacionada con las tablas `agente` y `cliente` mediante claves foráneas.
 
 #### **Tabla: agente**
 ```sql
@@ -494,13 +491,43 @@ CREATE TABLE `agente` (
   `telefono` varchar(20) NOT NULL,
   `email` varchar(100) DEFAULT NULL,
   `zona_asignada` varchar(50) NOT NULL,
-  PRIMARY KEY (`id_agente`)
+  `tipo_documento` int DEFAULT NULL,
+  `documento` varchar(50) NOT NULL,
+  `activo` tinyint(1) DEFAULT '1',
+  `imagen_perfil` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id_agente`),
+  FOREIGN KEY (`tipo_documento`) REFERENCES `tipo_documento`(`idTipoDocumento`)
+);
+```
+- **Validación:** No se permite que dos agentes tengan la misma combinación de `documento` y `tipo_documento`.
+
+#### **Tabla: cliente**
+```sql
+CREATE TABLE `cliente` (
+  `id_cliente` int NOT NULL AUTO_INCREMENT,
+  `nombre_completo` varchar(100) NOT NULL,
+  `documento` varchar(50) NOT NULL,
+  `direccion` varchar(200) NOT NULL,
+  `telefono` varchar(20) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `tipo` enum('Comprador','Vendedor','Ambos') NOT NULL,
+  `idTipoDocumento` int DEFAULT NULL,
+  `statusC` int NOT NULL,
+  PRIMARY KEY (`id_cliente`),
+  FOREIGN KEY (`idTipoDocumento`) REFERENCES `tipo_documento`(`idTipoDocumento`)
 );
 ```
 
 ### Relaciones
-- **propiedad** → **cliente** (id_cliente_vendedor)
-- **propiedad** → **agente** (id_agente)
+- **agente.tipo_documento** → **tipo_documento.idTipoDocumento**
+- **cliente.idTipoDocumento** → **tipo_documento.idTipoDocumento**
+
+### Formularios
+- En los formularios de creación y edición de agentes y clientes, se utiliza un `<select>` para elegir el tipo de documento, mostrando las descripciones de la tabla `tipo_documento`.
+
+### Validaciones
+- El sistema valida que no se repita la combinación de documento y tipo de documento en agentes.
+- Se valida la unicidad de email y teléfono como antes.
 
 ## 🏗️ Patrón MVC
 

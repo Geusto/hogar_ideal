@@ -11,7 +11,11 @@ class Agente {
     
     // Obtener todos los agentes
     public function getAll() {
-        $stmt = $this->pdo->query("SELECT * FROM agente ORDER BY nombre_completo");
+        $sql = "SELECT a.*, td.descripcion AS tipo_documento_nombre
+                FROM agente a
+                LEFT JOIN tipo_documento td ON a.tipo_documento = td.idTipoDocumento
+                ORDER BY a.nombre_completo";
+        $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
@@ -24,13 +28,15 @@ class Agente {
     
     // Crear nuevo agente
     public function create($data) {
-        $sql = "INSERT INTO agente (nombre_completo, email, telefono, zona_asignada, activo, imagen_perfil) VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO agente (nombre_completo, email, telefono, zona_asignada, tipo_documento, documento, activo, imagen_perfil) VALUES (?, ?, ?, ?, ?, ?, ?,?)";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
             $data['nombre_completo'],
             $data['email'],
             $data['telefono'],
             $data['zona_asignada'],
+            $data['tipo_documento'],
+            $data['documento'],
             $data['activo'],
             $data['imagen_perfil']
         ]);
@@ -38,13 +44,15 @@ class Agente {
     
     // Actualizar agente
     public function update($id, $data) {
-        $sql = "UPDATE agente SET nombre_completo = ?, email = ?, telefono = ?, zona_asignada = ?, activo = ?, imagen_perfil = ? WHERE id_agente = ?";
+        $sql = "UPDATE agente SET nombre_completo = ?, email = ?, telefono = ?, zona_asignada = ?, tipo_documento = ?, documento = ?, activo = ?, imagen_perfil = ? WHERE id_agente = ?";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
             $data['nombre_completo'],
             $data['email'],
             $data['telefono'],
             $data['zona_asignada'],
+            $data['tipo_documento'],
+            $data['documento'],
             $data['activo'],
             $data['imagen_perfil'],
             $id
@@ -123,5 +131,25 @@ class Agente {
         $stmt->execute($params);
         return $stmt->fetch()['total'] > 0;
     }
+
+    // Verificar si el documento y tipo_documento están en uso (opcionalmente excluyendo un id)
+    public function documentoEnUso($documento, $tipo_documento, $id = null) {
+        $sql = "SELECT COUNT(*) as total FROM agente WHERE documento = ? AND tipo_documento = ?";
+        $params = [$documento, $tipo_documento];
+        if ($id !== null) {
+            $sql .= " AND id_agente != ?";
+            $params[] = $id;
+        }
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetch()['total'] > 0;
+    }
+
+    // Obtener todos los tipos de documento
+    public function getTiposDocumento() {
+        $stmt = $this->pdo->query("SELECT * FROM tipo_documento");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?> 
+

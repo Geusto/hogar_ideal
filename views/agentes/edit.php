@@ -33,20 +33,36 @@ ob_start();
                 <div>
                     <label for="nombre_completo" class="block text-sm font-medium text-gray-700 mb-2">Nombre Completo *</label>
                     <input type="text" id="nombre_completo" name="nombre_completo" required
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value="<?= $agente['nombre_completo'] ?>">
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value="<?= $agente['nombre_completo'] ?>">
                 </div>
                 <div>
                     <label for="telefono" class="block text-sm font-medium text-gray-700 mb-2">Teléfono *</label>
                     <input type="text" id="telefono" name="telefono" required
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value="<?= $agente['telefono'] ?>">
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value="<?= $agente['telefono'] ?>">
+                </div>  
+                <div>
+                    <label for="tipo_documento" class="block text-sm font-medium text-gray-700 mb-2">Tipo de Documento *</label>
+                    <select name="tipo_documento" id="tipo_documento" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <?php foreach ($tipos_documento as $tipo): ?>
+                            <option value="<?= $tipo['idTipoDocumento'] ?>"><?= $tipo['descripcion'] ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>  
+                <div>
+                    <label for="documento" class="block text-sm font-medium text-gray-700 mb-2">Documento *</label>
+                    <input type="text" id="documento" name="documento" required
+                        pattern="[0-9]{8,15}"
+                        title="Solo números" 
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value="<?= isset($agente['documento']) ? htmlspecialchars($agente['documento']) : '' ?>">
                 </div>  
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
                     <input type="email" id="email" name="email" required
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value="<?= $agente['email'] ?>">
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value="<?= $agente['email'] ?>">
                 </div>  
                 <div>
                     <label for="zona_asignada" class="block text-sm font-medium text-gray-700 mb-2">Zona Asignada *</label>
@@ -115,6 +131,8 @@ if (fileInput) {
 function hayCambios() {
     if (form.nombre_completo.value !== original.nombre_completo) return true;
     if (form.telefono.value !== original.telefono) return true;
+    if (form.tipo_documento.value !== original.tipo_documento) return true;
+    if (form.documento.value !== original.documento) return true;
     if (form.email.value !== original.email) return true;
     if (form.zona_asignada.value !== original.zona_asignada) return true;
     if (form.activo.value !== original.activo) return true;

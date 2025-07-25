@@ -37,6 +37,8 @@ ob_start();
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo de Documento</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Documento</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Zona Asignada</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
@@ -57,6 +59,8 @@ ob_start();
               <td class="px-6 py-4 whitespace-nowrap text-gray-800 font-semibold"><?php echo ucfirst($agente['nombre_completo']); ?></td>
               <td class="px-6 py-4 whitespace-nowrap text-gray-600"><?php echo $agente['email']; ?></td>
               <td class="px-6 py-4 whitespace-nowrap text-gray-600"><?php echo $agente['telefono']; ?></td>
+              <td class="px-6 py-4 whitespace-nowrap text-gray-600"><?php echo $agente['tipo_documento_nombre']; ?></td>
+              <td class="px-6 py-4 whitespace-nowrap text-gray-600"><?php echo $agente['documento']; ?></td>
               <td class="px-6 py-4 whitespace-nowrap text-gray-600"><?php echo $agente['zona_asignada']; ?></td>
               <td class="px-6 py-4 whitespace-nowrap text-gray-600"><?php echo $agente['activo'] == 1 ? 'Activo' : 'Inactivo'; ?></td>
               <td class="px-6 py-4 whitespace-nowrap text-right">

@@ -800,3 +800,60 @@ if (isset($_FILES['imagen_perfil']) && $_FILES['imagen_perfil']['error'] === UPL
   - Se valida tanto en el frontend como en el backend para máxima robustez.
 
 --- 
+
+## Relaciones entre tablas y tipos de documento
+
+A partir de la versión actual, el sistema utiliza una tabla `tipo_documento` para normalizar los tipos de documento tanto de agentes como de clientes. Esta tabla se relaciona mediante claves foráneas con las tablas `agente` y `cliente`.
+
+### Estructura de la tabla tipo_documento
+```sql
+CREATE TABLE tipo_documento (
+  idTipoDocumento INT NOT NULL AUTO_INCREMENT,
+  descripcion VARCHAR(50) NOT NULL,
+  PRIMARY KEY (idTipoDocumento)
+);
+```
+
+### Relación con agente y cliente
+- En la tabla `agente`, el campo `tipo_documento` es una clave foránea a `tipo_documento.idTipoDocumento`.
+- En la tabla `cliente`, el campo `idTipoDocumento` es una clave foránea a `tipo_documento.idTipoDocumento`.
+
+### Ejemplo de validación de documento y tipo_documento en el modelo Agente
+```php
+// En models/Agente.php
+public function documentoEnUso($documento, $tipo_documento, $id = null) {
+    $sql = "SELECT COUNT(*) as total FROM agente WHERE documento = ? AND tipo_documento = ?";
+    $params = [$documento, $tipo_documento];
+    if ($id !== null) {
+        $sql .= " AND id_agente != ?";
+        $params[] = $id;
+    }
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetch()['total'] > 0;
+}
+```
+
+### Ejemplo de uso en el controlador
+```php
+// En controllers/AgenteController.php
+if ($this->agenteModel->documentoEnUso($data['documento'], $data['tipo_documento'], $id)) {
+    redirect('agente', 'edit', $id, ['msg' => 'El documento ya está en uso.', 'tipo' => 'error']);
+}
+```
+
+### Formularios: uso de <select> para tipo de documento
+En los formularios de creación y edición de agentes y clientes, se utiliza un `<select>` para elegir el tipo de documento:
+
+```php
+<select name="tipo_documento" id="tipo_documento" required>
+    <?php foreach ($tipos_documento as $tipo): ?>
+        <option value="<?= $tipo['idTipoDocumento'] ?>"><?= $tipo['descripcion'] ?></option>
+    <?php endforeach; ?>
+</select>
+```
+
+### Notas adicionales
+- El sistema valida que no se repita la combinación de documento y tipo de documento en agentes.
+- Se recomienda poblar la tabla `tipo_documento` con los valores iniciales necesarios (por ejemplo: Cédula, Pasaporte, etc).
+- En las vistas, para mostrar el nombre del tipo de documento, se recomienda hacer un JOIN en la consulta o mapear los IDs a descripciones usando un array asociativo. 

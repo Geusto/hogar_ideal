@@ -47,6 +47,23 @@ ob_start();
                         value="<?= isset($agente['telefono']) ? htmlspecialchars($agente['telefono']) : '' ?>">
                 </div>  
                 <div>
+                    <label for="tipo_documento" class="block text-sm font-medium text-gray-700 mb-2">Tipo de Documento *</label>
+                    <select name="tipo_documento" id="tipo_documento" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <?php foreach ($tipos_documento as $tipo): ?>
+                            <option value="<?= $tipo['idTipoDocumento'] ?>"><?= $tipo['descripcion'] ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>  
+                <div>
+                    <label for="documento" class="block text-sm font-medium text-gray-700 mb-2">Documento *</label>
+                    <input type="text" id="documento" name="documento" required
+                        pattern="[0-9]{8,15}"
+                        title="Solo números" 
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value="<?= isset($agente['documento']) ? htmlspecialchars($agente['documento']) : '' ?>">
+                </div>  
+
+                <div>
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
                     <input type="email" id="email" name="email" required
                         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"

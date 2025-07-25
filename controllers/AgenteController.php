@@ -24,7 +24,7 @@ class AgenteController {
   // Mostrar formulario para editar agente
   public function edit($id) {
     $agente = $this->agenteModel->getById($id);
-    
+    $tipos_documento = $this->agenteModel->getTiposDocumento();
     if (!$agente) {
       redirect('agente', 'index');
     }
@@ -39,6 +39,8 @@ class AgenteController {
             'nombre_completo' => $_POST['nombre_completo'] ?? '',
             'telefono' => $_POST['telefono'] ?? '',
             'email' => $_POST['email'] ?? '',
+            'tipo_documento' => $_POST['tipo_documento'] ?? '',
+            'documento' => $_POST['documento'] ?? '',
             'zona_asignada' => $_POST['zona_asignada'] ?? '',
             'activo' => $_POST['activo'] ?? '',
         ];
@@ -78,8 +80,13 @@ class AgenteController {
         } 
 
         // Validar que el teléfono no esté en uso
-        if ($this->agenteModel->telefonoEnUso($data['telefono'], $id)) {
-          redirect('agente', 'edit', $id, ['msg' => 'El teléfono ya está en uso.', 'tipo' => 'error']);
+        // if ($this->agenteModel->telefonoEnUso($data['telefono'], $id)) {
+        //   redirect('agente', 'edit', $id, ['msg' => 'El teléfono ya está en uso.', 'tipo' => 'error']);
+        // }
+
+        // Validar que el documento y tipo_documento no estén en uso
+        if ($this->agenteModel->documentoEnUso($data['documento'], $data['tipo_documento'], $id)) {
+          redirect('agente', 'edit', $id, ['msg' => 'El documento ya está en uso.', 'tipo' => 'error']);
         }
 
         if ($this->agenteModel->update($id, $data)) {
@@ -92,6 +99,7 @@ class AgenteController {
 
   // Mostrar formulario para crear nuevo agente
   public function create() {
+    $tipos_documento = $this->agenteModel->getTiposDocumento();
     include 'views/agentes/create.php';
   }
 
@@ -123,13 +131,13 @@ class AgenteController {
       return;
     }
     // Validar que el teléfono no esté en uso
-    if ($this->agenteModel->telefonoEnUso($data['telefono'])) {
-      $msg = 'El teléfono ya está en uso.';
-      $tipo = 'error';
-      $agente = $data;
-      include 'views/agentes/create.php';
-      return;
-    }
+    // if ($this->agenteModel->telefonoEnUso($data['telefono'])) {
+    //   $msg = 'El teléfono ya está en uso.';
+    //   $tipo = 'error';
+    //   $agente = $data;
+    //   include 'views/agentes/create.php';
+    //   return;
+    // }
 
     // Procesar imagen de perfil
     if (isset($_FILES['imagen_perfil']) && $_FILES['imagen_perfil']['error'] === UPLOAD_ERR_OK) {
@@ -139,9 +147,9 @@ class AgenteController {
       $tiposPermitidos = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
       if (in_array($tipoArchivo, $tiposPermitidos)) {
           if (move_uploaded_file($_FILES['imagen_perfil']['tmp_name'], $rutaDestino)) {
-              $data['imagen_perfil'] = $rutaDestino;
+            $data['imagen_perfil'] = $rutaDestino;
           } else {
-              $data['imagen_perfil'] = null;
+            $data['imagen_perfil'] = null;
           }
       } else {
         $data['imagen_perfil'] = null;
