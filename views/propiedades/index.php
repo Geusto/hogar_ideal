@@ -11,11 +11,11 @@ ob_start();
             <p class="text-gray-600">Gestiona todas las propiedades del sistema</p>
         </div>
         <div class="flex gap-4">
-        <a href="<?= url('home', 'index') ?>" 
+        <a href="<?= prettyUrl('home', 'index') ?>" 
         class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
             <i class="fas fa-arrow-left mr-2"></i>Volver
         </a>
-        <a href="<?= url('propiedad', 'create') ?>" 
+        <a href="<?= prettyUrl('propiedad', 'create') ?>" 
         class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
             <i class="fas fa-plus mr-2"></i>Nueva Propiedad
         </a>
@@ -65,7 +65,7 @@ ob_start();
         <!-- Botón para limpiar filtros -->
         <?php if (isset($_GET['estado']) || isset($_GET['tipo_propiedad']) || isset($_GET['q'])): ?>
             <div class="mt-4">
-                <a href="<?= url('propiedad', 'index') ?>" 
+                <a href="<?= prettyUrl('propiedad', 'index') ?>" 
                 class="text-blue-500 hover:text-blue-700 text-sm font-medium">
                     <i class="fas fa-times mr-1"></i>Limpiar filtros
                 </a>
@@ -91,7 +91,7 @@ ob_start();
             <?php foreach ($propiedades as $propiedad): ?>
                 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                     <?php if (!empty($propiedad['portada'])): ?>
-                        <img src="<?php echo htmlspecialchars($propiedad['portada']); ?>" alt="Portada" style="width:100%; max-height:180px; object-fit:cover;">
+                        <img src="<?php echo assetUrl($propiedad['portada']); ?>" alt="Portada" style="width:100%; max-height:180px; object-fit:cover;">
                     <?php endif; ?>
                     <div class="p-6">
                         <div class="flex justify-between items-start mb-4">
@@ -119,17 +119,17 @@ ob_start();
                         
                         <div class="flex justify-between items-center">
                             <div class="flex space-x-2">
-                                <a href="<?= url('propiedad', 'show', $propiedad['id_propiedad']) ?>" 
+                                <a href="<?= prettyUrl('propiedad', 'show', $propiedad['id_propiedad']) ?>" 
                                     class="text-blue-500 hover:text-blue-700">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="<?= url('propiedad', 'edit', $propiedad['id_propiedad']) ?>" 
+                                <a href="<?= prettyUrl('propiedad', 'edit', $propiedad['id_propiedad']) ?>" 
                                     class="text-green-500 hover:text-green-700">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <a href="#" 
                                     class="text-red-500 hover:text-red-700 btn-eliminar-propiedad"
-                                    data-url="<?= url('propiedad', 'delete', $propiedad['id_propiedad']) ?>"
+                                    data-url="<?= prettyUrl('propiedad', 'delete', $propiedad['id_propiedad']) ?>"
                                     data-direccion="<?= htmlspecialchars($propiedad['direccion']) ?>"
                                     title="Eliminar">
                                     <i class="fas fa-trash"></i>
@@ -159,7 +159,7 @@ include 'views/layouts/modal_confirmacion.php';
         const estado = document.getElementById('filtroEstado').value;
         const tipo = document.getElementById('filtroTipo').value;
         
-        let url = '<?= url('propiedad', 'index') ?>';
+        let url = '<?= prettyUrl('propiedad', 'index') ?>';
         
         if (estado) {
             url += '&estado=' + estado;

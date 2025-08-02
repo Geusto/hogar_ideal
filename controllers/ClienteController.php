@@ -69,7 +69,7 @@ class ClienteController {
       }
 
       if ($this->clienteModel->create($data)) {
-        header('Location: ' . url('clientes', 'viewCliente'));
+        redirect('cliente', 'viewCliente');
       } else {
         // Manejar error al crear cliente
         echo "Error al crear el cliente.";

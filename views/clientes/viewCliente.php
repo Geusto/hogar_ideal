@@ -17,11 +17,11 @@ foreach ($tiposDocumento as $tipo) {
             <p class="text-gray-600">Gestiona todos los Clientes del sistema</p>
         </div>
         <div class="flex gap-4">
-        <a href="<?= url('home', 'index') ?>" 
+        <a href="<?= prettyUrl('home', 'index') ?>" 
             class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
             <i class="fas fa-arrow-left mr-2"></i>Volver
         </a>
-        <a href="<?= url('cliente', 'create') ?>" 
+        <a href="<?= prettyUrl('cliente', 'create') ?>" 
           class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
             <i class="fas fa-plus mr-2"></i>Nuevo Cliente
         </a>
@@ -102,10 +102,10 @@ foreach ($tiposDocumento as $tipo) {
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-gray-600"><?php echo $cliente['statusC'] == 1 ? 'Activo' : 'Inactivo'; ?></td>
               <td class="px-6 py-4 whitespace-nowrap text-right">
-                <a href="<?= url('cliente', 'edit', $cliente['id_cliente']) ?>" class="text-blue-500 hover:text-blue-700 mr-3" title="Editar">
+                <a href="<?= prettyUrl('cliente', 'edit', $cliente['id_cliente']) ?>" class="text-blue-500 hover:text-blue-700 mr-3" title="Editar">
                   <i class="fas fa-edit"></i>
                 </a>
-                <a href="index.php?controller=cliente&action=changeStatus&id=<?= $cliente['id_cliente'] ?>&status=<?= ($cliente['statusC'] == 1 ? 0 : 1) ?>"
+                <a href="<?= prettyUrl('cliente', 'changeStatus', $cliente['id_cliente']) ?>?status=<?= ($cliente['statusC'] == 1 ? 0 : 1) ?>"
                   class="text-red-500 hover:text-red-700"
                   title="Cambiar Estado">
                   <i class="fas fa-exchange-alt mr-2"></i>

@@ -173,6 +173,12 @@ function url($controller, $action = 'index', $id = null) {
  * @return string URL amigable generada
  */
 function prettyUrl($controller, $action = 'index', $id = null) {
+    // Obtener la ruta base del proyecto
+    $base_path = dirname($_SERVER['SCRIPT_NAME']);
+    if ($base_path === '/') {
+        $base_path = '';
+    }
+    
     $url = $controller;
     if ($action !== 'index') {
         $url .= "/{$action}";
@@ -180,7 +186,26 @@ function prettyUrl($controller, $action = 'index', $id = null) {
     if ($id !== null) {
         $url .= "/{$id}";
     }
-    return $url;
+    
+    return $base_path . '/' . $url;
+}
+
+/**
+ * Genera una URL absoluta para archivos estáticos
+ * @param string $file_path Ruta del archivo (ej: uploads/imagen.jpg)
+ * @return string URL absoluta del archivo
+ */
+function assetUrl($file_path) {
+    // Obtener la ruta base del proyecto
+    $base_path = dirname($_SERVER['SCRIPT_NAME']);
+    if ($base_path === '/') {
+        $base_path = '';
+    }
+    
+    // Limpiar la ruta del archivo
+    $file_path = ltrim($file_path, '/');
+    
+    return $base_path . '/' . $file_path;
 }
 
 /**
@@ -190,7 +215,7 @@ function prettyUrl($controller, $action = 'index', $id = null) {
  * @param int|null $id ID del elemento (opcional)
  */
 function redirect($controller, $action = 'index', $id = null, $params = []) {
-    $url = url($controller, $action, $id);
+    $url = prettyUrl($controller, $action, $id);
     // Si hay parámetros adicionales, agrégalos como query string
     if (!empty($params) && is_array($params)) {
         $query = http_build_query($params);

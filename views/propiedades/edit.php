@@ -10,7 +10,7 @@ ob_start();
             <h1 class="text-3xl font-bold text-gray-800">Editar Propiedad</h1>
             <p class="text-gray-600">Modifica la información de la propiedad</p>
         </div>
-        <a href="<?= url('propiedad', 'index') ?>" 
+        <a href="<?= prettyUrl('propiedad', 'index') ?>" 
         class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
             <i class="fas fa-arrow-left mr-2"></i>Volver
         </a>
@@ -18,7 +18,7 @@ ob_start();
 
     <!-- Formulario -->
     <div class="bg-white rounded-lg shadow-md p-8">
-        <form method="POST" action="<?= url('propiedad', 'update', $propiedad['id_propiedad']) ?>" enctype="multipart/form-data">
+        <form method="POST" action="<?= prettyUrl('propiedad', 'update', $propiedad['id_propiedad']) ?>" enctype="multipart/form-data">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Información básica -->
                 <div class="md:col-span-2">
@@ -99,7 +99,7 @@ ob_start();
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Imagen de portada (fachada)</h3>
                     <?php if (!empty($propiedad['portada'])): ?>
                         <div class="mb-2">
-                            <img src="<?php echo htmlspecialchars($propiedad['portada']); ?>" alt="Portada actual" style="max-width: 200px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                            <img src="<?php echo assetUrl($propiedad['portada']); ?>" alt="Portada actual" style="max-width: 200px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
                             <div class="text-xs text-gray-500">Portada actual</div>
                         </div>
                     <?php endif; ?>
@@ -159,7 +159,7 @@ ob_start();
             
             <!-- Botones -->
             <div class="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200">
-                <a href="<?= url('propiedad', 'index') ?>" 
+                <a href="<?= prettyUrl('propiedad', 'index') ?>" 
                     class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
                     Cancelar
                 </a>

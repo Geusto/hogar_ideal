@@ -13,28 +13,28 @@
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center py-4">
                 <div class="flex items-center">
-                    <a href="index.php" class="text-2xl font-bold text-blue-600">
+                    <a href="<?= prettyUrl('home', 'index') ?>" class="text-2xl font-bold text-blue-600">
                         <i class="fas fa-home mr-2"></i>Hogar Ideal
                     </a>
                 </div>
                 <div class="hidden md:flex space-x-6">
-                    <a href="<?= url('home', 'index') ?>" 
+                    <a href="<?= prettyUrl('home', 'index') ?>" 
                         class="text-gray-700 hover:text-blue-600 transition-colors">
                         <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
                     </a>
-                    <a href="<?= url('propiedad', 'index') ?>" 
+                    <a href="<?= prettyUrl('propiedad', 'index') ?>" 
                         class="text-gray-700 hover:text-blue-600 transition-colors">
                         <i class="fas fa-home mr-1"></i>Propiedades
                     </a>
-                    <a href="<?= url('cliente', 'viewCliente') ?>" 
+                    <a href="<?= prettyUrl('cliente', 'viewCliente') ?>" 
                         class="text-gray-700 hover:text-blue-600 transition-colors">
                         <i class="fas fa-users mr-1"></i>Clientes
                     </a>
-                    <a href="<?= url('agente', 'index') ?>" 
+                    <a href="<?= prettyUrl('agente', 'index') ?>" 
                         class="text-gray-700 hover:text-blue-600 transition-colors">
                         <i class="fas fa-user-tie mr-1"></i>Agentes
                     </a>
-                    <a href="<?= url('venta', 'index') ?>" 
+                    <a href="<?= prettyUrl('venta', 'index') ?>" 
                     class="text-gray-700 hover:text-blue-600 transition-colors">
                         <i class="fas fa-chart-line mr-1"></i>Ventas
                     </a>

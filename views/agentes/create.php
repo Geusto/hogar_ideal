@@ -9,7 +9,7 @@ ob_start();
             <h1 class="text-3xl font-bold text-gray-800">Nuevo Agente</h1>
             <p class="text-gray-600">Agrega un nuevo agente al sistema</p>
         </div>
-        <a href="<?= url('agente', 'index') ?>" 
+        <a href="<?= prettyUrl('agente', 'index') ?>" 
         class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
             <i class="fas fa-arrow-left mr-2"></i>Volver
         </a>
@@ -25,7 +25,7 @@ ob_start();
 
     <!-- Formulario -->
     <div class="bg-white rounded-lg shadow-md p-8">
-        <form method="POST" action="<?= url('agente', 'store') ?>" enctype="multipart/form-data">
+        <form method="POST" action="<?= prettyUrl('agente', 'store') ?>" enctype="multipart/form-data">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Información básica -->
                 <div class="md:col-span-2">
@@ -85,7 +85,7 @@ ob_start();
             
             <!-- Botones -->
             <div class="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200">
-                <a href="<?= url('agente', 'index') ?>" 
+                <a href="<?= prettyUrl('agente', 'index') ?>" 
                     class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
                     Cancelar
                 </a>

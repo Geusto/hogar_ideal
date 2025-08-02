@@ -11,12 +11,12 @@ ob_start();
             <p class="text-gray-600">Gestiona todos los agentes del sistema</p>
         </div>
         <div class="flex gap-4">
-        <a href="<?= url('home', 'index') ?>" 
+        <a href="<?= prettyUrl('home', 'index') ?>" 
             class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
             <i class="fas fa-arrow-left mr-2"></i>Volver
         </a>
-        <a href="<?= url('agente', 'create') ?>" 
-          class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                <a href="<?= prettyUrl('agente', 'create') ?>" 
+        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
             <i class="fas fa-plus mr-2"></i>Nuevo Agente
         </a>
         </div>
@@ -49,7 +49,7 @@ ob_start();
             <tr class="border-b hover:bg-gray-50">
               <td class="px-6 py-4 ">
                 <?php if (!empty($agente['imagen_perfil'])): ?>
-                  <img src="<?php echo htmlspecialchars($agente['imagen_perfil']); ?>" alt="Imagen de perfil" class="object-cover w-10 h-10 rounded-full">
+                  <img src="<?php echo assetUrl($agente['imagen_perfil']); ?>" alt="Imagen de perfil" class="object-cover w-10 h-10 rounded-full">
                 <?php else: ?>
                   <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
                     <i class="fas fa-user text-gray-400 text-lg"></i>
@@ -64,11 +64,11 @@ ob_start();
               <td class="px-6 py-4 whitespace-nowrap text-gray-600"><?php echo $agente['zona_asignada']; ?></td>
               <td class="px-6 py-4 whitespace-nowrap text-gray-600"><?php echo $agente['activo'] == 1 ? 'Activo' : 'Inactivo'; ?></td>
               <td class="px-6 py-4 whitespace-nowrap text-right">
-                <a href="<?= url('agente', 'edit', $agente['id_agente']) ?>" class="text-blue-500 hover:text-blue-700 mr-3" title="Editar">
-                  <i class="fas fa-edit"></i>
+                                <a href="<?= prettyUrl('agente', 'edit', $agente['id_agente']) ?>" class="text-blue-500 hover:text-blue-700 mr-3" title="Editar">
+                    <i class="fas fa-edit"></i>
                 </a>
-                <a href="#" class="text-red-500 hover:text-red-700 btn-eliminar-agente" data-url="<?= url('agente', 'delete', $agente['id_agente']) ?>" title="Eliminar" data-nombre="<?= htmlspecialchars(ucfirst($agente['nombre_completo'])) ?>">
-                  <i class="fas fa-trash-alt"></i>
+                <a href="#" class="text-red-500 hover:text-red-700 btn-eliminar-agente" data-url="<?= prettyUrl('agente', 'delete', $agente['id_agente']) ?>" title="Eliminar" data-nombre="<?= htmlspecialchars(ucfirst($agente['nombre_completo'])) ?>">
+                    <i class="fas fa-trash-alt"></i>
                 </a>
               </td>
             </tr>

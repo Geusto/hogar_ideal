@@ -298,6 +298,208 @@ redirect('propiedad', 'index', null, [
 ]);
 ```
 
+---
+
+## 🌐 URLs Amigables (URL Rewriting)
+
+### ¿Qué son las URLs amigables?
+Las URLs amigables son URLs más limpias y profesionales que no exponen la estructura interna de la aplicación. En lugar de usar parámetros GET, utilizan una estructura de directorios más intuitiva.
+
+### Comparación de URLs:
+
+**URLs tradicionales:**
+```
+http://localhost/proyecto/index.php?controller=propiedad&action=edit&id=123
+http://localhost/proyecto/index.php?controller=cliente&action=create
+http://localhost/proyecto/index.php?controller=agente&action=index
+```
+
+**URLs amigables:**
+```
+http://localhost/proyecto/propiedad/edit/123
+http://localhost/proyecto/cliente/create
+http://localhost/proyecto/agente/index
+```
+
+### Configuración necesaria:
+
+#### 1. Archivo `.htaccess`
+```apache
+RewriteEngine On
+
+# Redirigir todas las peticiones a index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+
+# Permitir acceso a archivos estáticos
+RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|jpeg|gif|ico|pdf)$
+```
+
+#### 2. Función de procesamiento en `index.php`
+```php
+// Función para procesar URLs amigables
+function parseUrl($url) {
+    $url = trim($url, '/');
+    $parts = explode('/', $url);
+    
+    $controller = $parts[0] ?? 'home';
+    $action = $parts[1] ?? 'index';
+    $id = $parts[2] ?? null;
+    $status = $parts[3] ?? null;
+    
+    return [$controller, $action, $id, $status];
+}
+
+// Obtener parámetros de la URL
+$url = $_GET['url'] ?? '';
+$controller = $_GET['controller'] ?? 'home';
+$action = $_GET['action'] ?? 'index';
+$id = $_GET['id'] ?? null;
+$status = $_GET['status'] ?? null;
+
+// Si hay URL amigable, procesarla
+if (!empty($url)) {
+    [$controller, $action, $id, $status] = parseUrl($url);
+}
+```
+
+#### 3. Funciones helper en `includes/functions.php`
+```php
+/**
+ * Genera una URL tradicional
+ */
+function url($controller, $action = 'index', $id = null) {
+    $url = "index.php?controller={$controller}&action={$action}";
+    if ($id !== null) {
+        $url .= "&id={$id}";
+    }
+    return $url;
+}
+
+/**
+ * Genera una URL amigable
+ */
+function prettyUrl($controller, $action = 'index', $id = null) {
+    $url = $controller;
+    if ($action !== 'index') {
+        $url .= "/{$action}";
+    }
+    if ($id !== null) {
+        $url .= "/{$id}";
+    }
+    return $url;
+}
+
+/**
+ * Redirige usando URLs amigables
+ */
+function redirect($controller, $action = 'index', $id = null, $params = []) {
+    $url = prettyUrl($controller, $action, $id);
+    if (!empty($params) && is_array($params)) {
+        $query = http_build_query($params);
+        $url .= (strpos($url, '?') === false ? '?' : '&') . $query;
+    }
+    header("Location: {$url}");
+    exit;
+}
+```
+
+### Uso en vistas:
+
+**Antes (URLs tradicionales):**
+```php
+<a href="<?= url('propiedad', 'edit', $propiedad['id']) ?>">Editar</a>
+<a href="<?= url('cliente', 'create') ?>">Nuevo Cliente</a>
+```
+
+**Después (URLs amigables):**
+```php
+<a href="<?= prettyUrl('propiedad', 'edit', $propiedad['id']) ?>">Editar</a>
+<a href="<?= prettyUrl('cliente', 'create') ?>">Nuevo Cliente</a>
+```
+
+### Ventajas de las URLs amigables:
+
+✅ **Mejor SEO** - Los motores de búsqueda las prefieren  
+✅ **Más profesionales** - URLs más limpias y atractivas  
+✅ **Fáciles de recordar** - Más intuitivas para los usuarios  
+✅ **Seguridad mejorada** - No exponen la estructura interna  
+✅ **Compatibilidad** - Las URLs tradicionales siguen funcionando  
+
+### Mapeo de controladores:
+```php
+$controllers = [
+    'home' => 'HomeController',
+    'propiedad' => 'PropiedadController',
+    'propiedades' => 'PropiedadController', // Alias
+    'cliente' => 'ClienteController',
+    'clientes' => 'ClienteController', // Alias
+    'agente' => 'AgenteController',
+    'agentes' => 'AgenteController', // Alias
+];
+```
+
+### ⚠️ Importante: Uso correcto de URLs
+
+**Usar siempre el nombre singular del controlador en `prettyUrl()`:**
+
+```php
+// ✅ CORRECTO - Usar nombre singular
+prettyUrl('agente', 'create')     // /agente/create
+prettyUrl('cliente', 'viewCliente') // /cliente/viewCliente
+prettyUrl('propiedad', 'edit', 123) // /propiedad/edit/123
+
+// ❌ INCORRECTO - Usar plural puede causar duplicación
+prettyUrl('agentes', 'create')    // /agentes/create (puede causar problemas)
+prettyUrl('clientes', 'viewCliente') // /clientes/viewCliente
+prettyUrl('propiedades', 'edit', 123) // /propiedades/edit/123
+```
+
+**Razón:** Los alias en el mapeo son para compatibilidad, pero siempre usa el nombre singular para generar URLs.
+
+### Migración de URLs Tradicionales a Amigables
+
+#### Paso 1: Actualizar vistas
+```php
+// Antes
+<a href="<?= url('propiedad', 'edit', $propiedad['id']) ?>">Editar</a>
+
+// Después
+<a href="<?= prettyUrl('propiedad', 'edit', $propiedad['id']) ?>">Editar</a>
+```
+
+#### Paso 2: Actualizar redirecciones
+```php
+// Antes
+header('Location: index.php?controller=propiedad&action=index');
+
+// Después
+redirect('propiedad', 'index');
+```
+
+#### Paso 3: Actualizar formularios
+```php
+// Antes
+<form action="<?= url('propiedad', 'store') ?>" method="POST">
+
+// Después
+<form action="<?= prettyUrl('propiedad', 'store') ?>" method="POST">
+```
+
+#### Paso 4: Verificar compatibilidad
+- Las URLs tradicionales siguen funcionando
+- Los enlaces internos usan URLs amigables
+- Los motores de búsqueda prefieren las nuevas URLs
+
+### Mejores Prácticas
+
+✅ **Usar `prettyUrl()` en todas las vistas nuevas**  
+✅ **Mantener `url()` para compatibilidad**  
+✅ **Usar `redirect()` para redirecciones**  
+✅ **Documentar ambos tipos de URLs**  
+✅ **Probar ambas formas de acceso**  
+
 ### Ejemplo en la vista:
 ```php
 if (isset($_GET['msg'])) {

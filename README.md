@@ -217,6 +217,64 @@ $nombre = postParam('nombre', '');
 $email = postParam('email', '');
 ```
 
+### 🌐 Sistema de URLs Amigables
+
+#### **Configuración Requerida**
+
+**1. Archivo `.htaccess`**
+```apache
+RewriteEngine On
+
+# Redirigir todas las peticiones a index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+
+# Permitir acceso a archivos estáticos
+RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|jpeg|gif|ico|pdf)$
+```
+
+**2. Procesamiento en `index.php`**
+```php
+// Función para procesar URLs amigables
+function parseUrl($url) {
+    $url = trim($url, '/');
+    $parts = explode('/', $url);
+    
+    $controller = $parts[0] ?? 'home';
+    $action = $parts[1] ?? 'index';
+    $id = $parts[2] ?? null;
+    $status = $parts[3] ?? null;
+    
+    return [$controller, $action, $id, $status];
+}
+
+// Si hay URL amigable, procesarla
+if (!empty($_GET['url'])) {
+    [$controller, $action, $id, $status] = parseUrl($_GET['url']);
+}
+```
+
+#### **Ventajas de las URLs Amigables**
+
+✅ **Mejor SEO** - Los motores de búsqueda las prefieren  
+✅ **Más profesionales** - URLs más limpias y atractivas  
+✅ **Fáciles de recordar** - Más intuitivas para los usuarios  
+✅ **Seguridad mejorada** - No exponen la estructura interna  
+✅ **Compatibilidad** - Las URLs tradicionales siguen funcionando  
+
+#### **Ejemplos de URLs**
+
+| Acción | URL Amigable | URL Tradicional |
+|--------|--------------|-----------------|
+| Dashboard | `/` o `/home` | `index.php` |
+| Listar Propiedades | `/propiedad` | `index.php?controller=propiedad&action=index` |
+| Crear Propiedad | `/propiedad/create` | `index.php?controller=propiedad&action=create` |
+| Editar Propiedad | `/propiedad/edit/123` | `index.php?controller=propiedad&action=edit&id=123` |
+| Ver Propiedad | `/propiedad/show/123` | `index.php?controller=propiedad&action=show&id=123` |
+| Listar Clientes | `/cliente/viewCliente` | `index.php?controller=cliente&action=viewCliente` |
+| Crear Cliente | `/cliente/create` | `index.php?controller=cliente&action=create` |
+
 ### 🗺️ Mapeo de Controladores
 
 El sistema utiliza un **mapeo centralizado** de controladores:
@@ -237,14 +295,38 @@ $controllers = [
 
 ### 📋 Navegación Principal
 
+#### URLs Amigables (Recomendadas)
+- **Dashboard:** `/` o `/home` - Panel principal con estadísticas
+- **Propiedades:** `/propiedad` o `/propiedades` - Gestión de propiedades
+- **Clientes:** `/cliente/viewCliente` - Gestión de clientes
+- **Agentes:** `/agente` o `/agentes` - Gestión de agentes
+
+#### URLs Tradicionales (Compatibilidad)
 - **Dashboard:** `index.php` - Panel principal con estadísticas
 - **Propiedades:** `index.php?controller=propiedad&action=index` - Gestión de propiedades
 - **Clientes:** `index.php?controller=cliente&action=index` - Gestión de clientes
 
+#### Ejemplos de Acceso
+```bash
+# URLs Amigables (Recomendadas)
+http://localhost/hogar-ideal/
+http://localhost/hogar-ideal/propiedad
+http://localhost/hogar-ideal/propiedad/create
+http://localhost/hogar-ideal/propiedad/edit/123
+http://localhost/hogar-ideal/cliente/viewCliente
+http://localhost/hogar-ideal/agente
+
+# URLs Tradicionales (Compatibilidad)
+http://localhost/hogar-ideal/index.php?controller=propiedad&action=index
+http://localhost/hogar-ideal/index.php?controller=propiedad&action=create
+http://localhost/hogar-ideal/index.php?controller=propiedad&action=edit&id=123
+```
+
 ### 🏠 Gestión de Propiedades
 
 #### Listar Propiedades
-- **URL:** `index.php?controller=propiedad&action=index`
+- **URL amigable:** `/propiedad` o `/propiedades`
+- **URL tradicional:** `index.php?controller=propiedad&action=index`
 - **Funcionalidades:**
   - Vista de todas las propiedades
   - Filtros por estado y tipo
@@ -252,7 +334,8 @@ $controllers = [
   - Acciones rápidas (ver, editar, eliminar)
 
 #### Crear Propiedad
-- **URL:** `index.php?controller=propiedad&action=create`
+- **URL amigable:** `/propiedad/create`
+- **URL tradicional:** `index.php?controller=propiedad&action=create`
 - **Campos requeridos:**
   - Tipo de propiedad (casa, apartamento, terreno, local)
   - Dirección
@@ -263,14 +346,16 @@ $controllers = [
   - Agente responsable
 
 #### Editar Propiedad
-- **URL:** `index.php?controller=propiedad&action=edit&id=[ID]`
+- **URL amigable:** `/propiedad/edit/[ID]`
+- **URL tradicional:** `index.php?controller=propiedad&action=edit&id=[ID]`
 - **Funcionalidades:**
   - Formulario pre-cargado con datos actuales
   - Validación de campos
   - Actualización en tiempo real
 
 #### Ver Detalles
-- **URL:** `index.php?controller=propiedad&action=show&id=[ID]`
+- **URL amigable:** `/propiedad/show/[ID]`
+- **URL tradicional:** `index.php?controller=propiedad&action=show&id=[ID]`
 - **Información mostrada:**
   - Características completas
   - Información de relaciones
