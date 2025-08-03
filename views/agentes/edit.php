@@ -53,7 +53,7 @@ ob_start();
                 <div>
                     <label for="documento" class="block text-sm font-medium text-gray-700 mb-2">Documento *</label>
                     <input type="text" id="documento" name="documento" required
-                        pattern="[0-9]{8,15}"
+                        pattern="[0-9]{8,10}"
                         title="Solo números" 
                         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         value="<?= isset($agente['documento']) ? htmlspecialchars($agente['documento']) : '' ?>">
