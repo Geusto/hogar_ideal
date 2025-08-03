@@ -11,10 +11,11 @@ class Venta {
     
     // Obtener todas las ventas
     public function getAll() {
-        $stmt = $this->pdo->query("SELECT v.*, p.direccion as propiedad_direccion, c.nombre_completo as cliente_comprador, a.nombre_completo as agente_nombre 
+        $stmt = $this->pdo->query("SELECT v.id_venta, v.fecha_venta, v.precio_final, v.comision, v.metodo_pago, p.direccion as propiedad_direccion, c.nombre_completo as cliente_comprador, c2.nombre_completo as cliente_vendedor, a.nombre_completo as agente_nombre 
         FROM venta v 
         LEFT JOIN propiedad p ON v.id_propiedad = p.id_propiedad 
         LEFT JOIN cliente c ON v.id_cliente_comprador = c.id_cliente 
+        LEFT JOIN cliente c2 ON v.id_cliente_vendedor = c2.id_cliente 
         LEFT JOIN agente a ON v.id_agente = a.id_agente 
         ORDER BY v.fecha_venta DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
