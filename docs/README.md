@@ -22,6 +22,7 @@ Bienvenido a la documentación completa del sistema "Hogar Ideal", una aplicaci�
 ### 🔧 Funciones Helper
 - **[05-functions/url-helpers.md](05-functions/url-helpers.md)** - Funciones de generación de URLs
 - **[05-functions/redirect.md](05-functions/redirect.md)** - Sistema de redirecciones
+- **[05-functions/mostrar-mensaje.md](05-functions/mostrar-mensaje.md)** - Sistema de notificaciones toast
 
 ---
 

@@ -777,6 +777,7 @@ El proyecto incluye documentación detallada organizada en la carpeta `docs/`:
 ### 🔧 Funciones Helper
 - **[docs/05-functions/url-helpers.md](docs/05-functions/url-helpers.md)** - Funciones de generación de URLs
 - **[docs/05-functions/redirect.md](docs/05-functions/redirect.md)** - Sistema de redirecciones
+- **[docs/05-functions/mostrar-mensaje.md](docs/05-functions/mostrar-mensaje.md)** - Sistema de notificaciones toast
 
 ### 📖 Documentación Principal
 - **[docs/README.md](docs/README.md)** - Índice completo de toda la documentación
