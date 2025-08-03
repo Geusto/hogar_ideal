@@ -759,6 +759,30 @@ public function index() {
 - [ ] Backup automático
 - [ ] Tests unitarios
 
+## 📚 Documentación Completa
+
+El proyecto incluye documentación detallada organizada en la carpeta `docs/`:
+
+### 🚀 Guías de Inicio
+- **[docs/01-getting-started.md](docs/01-getting-started.md)** - Guía de instalación y configuración
+- **[docs/02-mvc-pattern.md](docs/02-mvc-pattern.md)** - Explicación del patrón MVC
+- **[docs/03-database-schema.md](docs/03-database-schema.md)** - Esquema completo de base de datos
+
+### 🏗️ Entidades del Sistema
+- **[docs/04-entities/agente.md](docs/04-entities/agente.md)** - Documentación de la entidad Agente
+- **[docs/04-entities/propiedad.md](docs/04-entities/propiedad.md)** - Documentación de la entidad Propiedad *(próximamente)*
+- **[docs/04-entities/cliente.md](docs/04-entities/cliente.md)** - Documentación de la entidad Cliente *(próximamente)*
+- **[docs/04-entities/venta.md](docs/04-entities/venta.md)** - Documentación de la entidad Venta *(próximamente)*
+
+### 🔧 Funciones Helper
+- **[docs/05-functions/url-helpers.md](docs/05-functions/url-helpers.md)** - Funciones de generación de URLs
+- **[docs/05-functions/redirect.md](docs/05-functions/redirect.md)** - Sistema de redirecciones
+
+### 📖 Documentación Principal
+- **[docs/README.md](docs/README.md)** - Índice completo de toda la documentación
+
+---
+
 ## 🤝 Contribuir
 
 ### **Cómo Contribuir**
@@ -770,12 +794,13 @@ public function index() {
 
 ### **Estándares de Código**
 - Seguir el patrón MVC
-- Usar PSR-4 para autoloading
-- Documentar funciones y clases
+- Usar funciones helper para URLs y redirecciones
+- Validar todos los datos de entrada
+- Documentar nuevas funcionalidades
 - Mantener consistencia en el nombramiento
 - Escribir código limpio y legible
 
-**Hogar Ideal** - Sistema de Gestión Inmobiliaria © 2024 
+---
 
 ## 👤 Gestión de imágenes de perfil de agentes
 
@@ -791,4 +816,8 @@ public function index() {
 - **Formato de teléfono:** Solo se aceptan números y el símbolo + (validación en el frontend con pattern y en el backend con preg_match).
 - **Persistencia de datos tras error:** Si ocurre un error de validación al crear un agente, el formulario mantiene los datos ingresados y solo muestra el mensaje de error.
 - **Feedback visual:** Todos los mensajes de error, éxito o advertencia se muestran con la función `mostrarMensaje`.
-- **Validación doble:** Se valida tanto en el frontend (HTML) como en el backend (PHP) para máxima robustez. 
+- **Validación doble:** Se valida tanto en el frontend (HTML) como en el backend (PHP) para máxima robustez.
+
+---
+
+**Hogar Ideal** - Sistema de Gestión Inmobiliaria © 2024 
