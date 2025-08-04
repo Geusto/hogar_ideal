@@ -34,7 +34,7 @@ if (isset($_GET['msg'])) {
           <td class="px-6 py-4 ">
             <?php echo $venta['fecha_venta']; ?>
           </td>
-          <td class="px-6 py-4 whitespace-nowrap text-gray-800 font-semibold"><?php echo $venta['precio_final']; ?></td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-800 font-semibold">$<?php echo number_format($venta['precio_final'], 2, ',', '.'); ?></td>
           <td class="px-6 py-4 whitespace-nowrap text-gray-600"><?php echo $venta['cliente_vendedor']; ?></td>
           <td class="px-6 py-4 whitespace-nowrap text-gray-600"><?php echo $venta['cliente_comprador']; ?></td>
           <td class="px-6 py-4 whitespace-nowrap text-gray-600"><?php echo $venta['agente_nombre']; ?></td>
