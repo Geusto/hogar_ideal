@@ -40,12 +40,19 @@ if (isset($_GET['msg'])) {
           <td class="px-6 py-4 whitespace-nowrap text-gray-600"><?php echo $venta['agente_nombre']; ?></td>
           <td class="px-6 py-4 whitespace-nowrap text-gray-600"><?php echo $venta['propiedad_direccion']; ?></td>
           <td class="px-6 py-4 whitespace-nowrap text-right">
-          <!-- <a href="<?= prettyUrl('venta', 'edit', $venta['id_venta']) ?>" class="text-blue-500 hover:text-blue-700 mr-3" title="Editar">
-            <i class="fas fa-edit"></i>
-          </a>
-            <a href="#" class="text-red-500 hover:text-red-700 btn-eliminar-venta" data-url="<?= prettyUrl('venta', 'delete', $venta['id_venta']) ?>" title="Eliminar" data-nombre="<?= htmlspecialchars(ucfirst($venta['nombre_completo'])) ?>">
-                <i class="fas fa-trash-alt"></i>
-            </a> -->
+            <div class="flex space-x-2 justify-end">
+              <a href="<?= prettyUrl('venta', 'comprobantePDFView', $venta['id_venta']) ?>" 
+                class="text-blue-500 hover:text-blue-700" 
+                title="Ver comprobante en navegador" 
+                target="_blank">
+                  <i class="fas fa-eye"></i>
+              </a>
+              <a href="<?= prettyUrl('venta', 'comprobantePDF', $venta['id_venta']) ?>" 
+                class="text-green-500 hover:text-green-700" 
+                title="Descargar comprobante PDF">
+                  <i class="fas fa-download"></i>
+              </a>
+            </div>
           </td>
         </tr>
       <?php endforeach; ?>

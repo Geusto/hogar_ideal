@@ -24,6 +24,12 @@ Bienvenido a la documentación completa del sistema "Hogar Ideal", una aplicaci�
 - **[05-functions/redirect.md](05-functions/redirect.md)** - Sistema de redirecciones
 - **[05-functions/mostrar-mensaje.md](05-functions/mostrar-mensaje.md)** - Sistema de notificaciones toast
 
+### 📄 Reportes y PDF
+- **[06-reportes/generacion-pdf.md](06-reportes/generacion-pdf.md)** - Generación de reportes PDF con mPDF
+
+### 🔒 Seguridad y Configuración
+- **[07-seguridad/gitignore-configuracion.md](07-seguridad/gitignore-configuracion.md)** - Configuración de seguridad y manejo de credenciales
+
 ---
 
 ## 🎯 Características Principales

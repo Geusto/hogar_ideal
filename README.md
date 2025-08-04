@@ -142,8 +142,12 @@ hogar ideal/
 
 ### Base de Datos
 
-Editar `config/database.php`:
+**1. Copiar archivo de configuración:**
+```bash
+cp config/database.example.php config/database.php
+```
 
+**2. Editar `config/database.php` con tus credenciales:**
 ```php
 <?php
 $host = 'localhost';
@@ -159,6 +163,8 @@ try {
 }
 ?>
 ```
+
+**⚠️ IMPORTANTE:** El archivo `config/database.php` está en `.gitignore` por seguridad. Nunca subas credenciales reales al repositorio.
 
 ## 📖 Uso
 
@@ -778,6 +784,12 @@ El proyecto incluye documentación detallada organizada en la carpeta `docs/`:
 - **[docs/05-functions/url-helpers.md](docs/05-functions/url-helpers.md)** - Funciones de generación de URLs
 - **[docs/05-functions/redirect.md](docs/05-functions/redirect.md)** - Sistema de redirecciones
 - **[docs/05-functions/mostrar-mensaje.md](docs/05-functions/mostrar-mensaje.md)** - Sistema de notificaciones toast
+
+### 📄 Reportes y PDF
+- **[docs/06-reportes/generacion-pdf.md](docs/06-reportes/generacion-pdf.md)** - Generación de reportes PDF con mPDF
+
+### 🔒 Seguridad y Configuración
+- **[docs/07-seguridad/gitignore-configuracion.md](docs/07-seguridad/gitignore-configuracion.md)** - Configuración de seguridad y manejo de credenciales
 
 ### 📖 Documentación Principal
 - **[docs/README.md](docs/README.md)** - Índice completo de toda la documentación
