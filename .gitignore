@@ -160,6 +160,8 @@ config/local/
 dev.php
 local.php
 
+# Documentación antigua (migrada a docs/)
+DOCUMENTACION_ENTIDAD_AGENTE.md
 # ========================================
 # EXCEPCIONES (archivos que SÍ queremos)
 # ========================================
