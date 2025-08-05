@@ -205,5 +205,36 @@ class Cliente {
         return $result && $result['statusC'] == 0;
     }
 
+    public function filtrarClientes($filtros) {
+        $sql = "SELECT * FROM cliente WHERE 1=1";
+        $params = [];
+
+        if (!empty($filtros['buscar'])) {
+            $sql .= " AND nombre_completo LIKE ?";
+            $params[] = '%' . $filtros['buscar'] . '%';
+        }
+
+        if (!empty($filtros['tipo'])) {
+            $sql .= " AND tipo = ?";
+            $params[] = $filtros['tipo'];
+        }
+
+        if ($filtros['estado'] !== '' && $filtros['estado'] !== null) {
+            $sql .= " AND statusC = ?";
+            $params[] = $filtros['estado'];
+        }
+
+        if (!empty($filtros['tipoDocumento'])) {
+            $sql .= " AND idTipoDocumento = ?";
+            $params[] = $filtros['tipoDocumento'];
+        }
+
+        $sql .= " ORDER BY nombre_completo";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
 }
 ?> 

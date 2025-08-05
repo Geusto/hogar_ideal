@@ -13,23 +13,17 @@ class ClienteController {
     // Obtener todos los clientes y tipos de documento
     $clientes = $this->clienteModel->getAll();
     $tiposDocumento = $this->clienteModel->getTiposDocumento();
-    $tiposDoc = [];
+    // Filtros desde GET
+    $filtros = [
+        'buscar' => $_GET['buscar'] ?? '',
+        'tipo' => $_GET['tipo'] ?? '',
+        'estado' => $_GET['estado'] ?? '',
+        'tipoDocumento' => $_GET['tipoDocumento'] ?? ''
+    ];
 
-    foreach ($tiposDocumento as $tipo) {
-      $tiposDoc[$tipo['idTipoDocumento']] = $tipo['descripcion'];
-    }
+    // Obtener clientes filtrados
+    $clientes = $this->clienteModel->filtrarClientes($filtros);
 
-
-    // Filtrar clientes según los parámetros de búsqueda
-    if (isset($_GET['buscar'])) {
-      $clientes = $this->clienteModel->searchByName($_GET['buscar']);
-    } elseif (isset($_GET['tipo'])) {
-      $clientes = $this->clienteModel->getByTipo($_GET['tipo']);
-    } elseif (isset($_GET['estado'])) {
-      $clientes = $this->clienteModel->getByEstado($_GET['estado']);
-    } elseif (isset($_GET['idTipoDocumento'])) {
-      $clientes = $this->clienteModel->getByTipoDocumento($_GET['idTipoDocumento']);
-    }
     include 'views/clientes/viewCliente.php';
   }
 
@@ -120,11 +114,21 @@ class ClienteController {
   }
 
   // cambiar estado del cliente
-  public function changeStatus($id, $status) {
+  public function changeStatus($id) {
+    $status = $_GET['status'] ?? null;
+
+    // Validar que status sea 0 o 1
+    if (!in_array($status, ['0', '1'], true)) {
+        header("Location: ?url=cliente/viewCliente&msg=Estado+inv%C3%A1lido.&tipo=error");
+        exit;
+    }
+
     if ($this->clienteModel->updateStatus($id, $status)) {
-      redirect('cliente', 'viewCliente', null, ['msg' => 'Estado del cliente actualizado correctamente.', 'tipo' => 'exito']);
+        header("Location: ?url=cliente/viewCliente&msg=Estado+del+cliente+actualizado+correctamente.&tipo=exito");
+        exit;
     } else {
-      redirect('cliente', 'viewCliente', null, ['msg' => 'No se pudo actualizar el estado del cliente.', 'tipo' => 'error']);
+        header("Location: ?url=cliente/viewCliente&msg=No+se+pudo+actualizar+el+estado+del+cliente.&tipo=error");
+        exit;
     }
   }
 

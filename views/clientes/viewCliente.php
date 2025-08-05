@@ -105,7 +105,7 @@ foreach ($tiposDocumento as $tipo) {
                 <a href="<?= prettyUrl('cliente', 'edit', $cliente['id_cliente']) ?>" class="text-blue-500 hover:text-blue-700 mr-3" title="Editar">
                   <i class="fas fa-edit"></i>
                 </a>
-                <a href="<?= prettyUrl('cliente', 'changeStatus', $cliente['id_cliente']) ?>?status=<?= ($cliente['statusC'] == 1 ? 0 : 1) ?>"
+                <a href="?url=cliente/changeStatus/<?= $cliente['id_cliente'] ?>&status=<?= ($cliente['statusC'] == 1 ? 0 : 1) ?>"
                   class="text-red-500 hover:text-red-700"
                   title="Cambiar Estado">
                   <i class="fas fa-exchange-alt mr-2"></i>
