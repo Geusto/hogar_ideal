@@ -83,6 +83,13 @@ ob_start();
             <div class="text-xl mb-2">Gestionar Agentes</div>
             <div class="text-sm opacity-90">Administrar información de agentes</div>
         </a>
+
+        <a href="<?= prettyUrl('venta', 'index') ?>" 
+            class="bg-yellow-500 hover:bg-yellow-600 text-white p-8 rounded-lg font-semibold transition-colors text-center">
+            <i class="fas fa-users text-4xl mb-4"></i>
+            <div class="text-xl mb-2">Gestionar Ventas</div>
+            <div class="text-sm opacity-90">Administrar información de ventas</div>
+        </a>
     </div>
 </div>
 

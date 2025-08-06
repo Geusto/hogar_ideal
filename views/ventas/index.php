@@ -14,8 +14,23 @@ if (isset($_GET['msg'])) {
 
 <!-- Lista de ventas -->
 <div class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold text-gray-800">Ventas</h1>
-  <p class="text-gray-600 mb-8">Gestiona todas las ventas del sistema</p>
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">Ventas</h1>
+            <p class="text-gray-600">Gestiona todas las ventas del sistema</p>
+        </div>
+        <div class="flex gap-4">
+        <a href="<?= prettyUrl('home', 'index') ?>" 
+            class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>Volver
+        </a>
+                <a href="<?= prettyUrl('venta', 'create') ?>" 
+        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+            <i class="fas fa-plus mr-2"></i>Nueva Venta
+        </a>
+        </div>
+    </div>
   <table class="min-w-full bg-white rounded-lg shadow-md">
     <thead>
       <tr>
