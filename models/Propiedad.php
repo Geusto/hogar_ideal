@@ -145,5 +145,19 @@ class Propiedad {
         $stmt->execute([$estado]);
         return $stmt->fetch()['total'];
     }
+    
+    // Obtener fotos de una propiedad
+    public function getFotos($idPropiedad) {
+        require_once 'models/FotoPropiedad.php';
+        $fotoModel = new FotoPropiedad();
+        return $fotoModel->getByPropiedad($idPropiedad);
+    }
+    
+    // Obtener foto de portada de una propiedad
+    public function getFotoPortada($idPropiedad) {
+        require_once 'models/FotoPropiedad.php';
+        $fotoModel = new FotoPropiedad();
+        return $fotoModel->getPortada($idPropiedad);
+    }
 }
 ?> 

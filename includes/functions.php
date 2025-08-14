@@ -288,4 +288,16 @@ function formatPrice($price) {
 function formatDate($date, $format = 'd/m/Y') {
     return date($format, strtotime($date));
 }
+
+/**
+ * Obtiene la URL de la imagen por defecto para propiedades sin fotos
+ * @return string URL de la imagen por defecto
+ */
+function getDefaultPropertyImage() {
+    // Imagen local por defecto
+    return assetUrl('assets/images/default.png');
+    
+    // Alternativa: usar servicio externo (descomenta si prefieres)
+    // return 'https://picsum.photos/400/300?random=1.webp';
+}
 ?> 

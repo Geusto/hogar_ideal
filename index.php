@@ -24,6 +24,8 @@ $id = $_GET['id'] ?? null;
 $status = $_GET['status'] ?? null;
 
 
+
+
 // Si hay URL amigable, procesarla
 if (!empty($url)) {
     [$controller, $action, $id, $status] = parseUrl($url);

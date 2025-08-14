@@ -30,12 +30,55 @@ ob_start();
         </span>
     </div>
 
-    <!-- Mostrar portada si existe -->
-    <?php if (!empty($propiedad['portada'])): ?>
-        <div class="mb-6">
-            <img src="<?php echo assetUrl($propiedad['portada']); ?>" alt="Portada de la propiedad" style="max-width: 400px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-        </div>
-    <?php endif; ?>
+    <!-- Galería de Fotos -->
+    <div class="mb-8">
+        <?php if (!empty($fotos)): ?>
+            <!-- Foto principal (portada) -->
+            <?php if ($fotoPortada): ?>
+                <div class="mb-6">
+                    <img src="<?php echo assetUrl($fotoPortada['nombre_archivo']); ?>" 
+                        alt="<?php echo htmlspecialchars($fotoPortada['descripcion'] ?: 'Foto de portada'); ?>" 
+                        class="w-full max-w-4xl mx-auto rounded-lg shadow-lg" 
+                        style="max-height: 500px; object-fit: cover;">
+                </div>
+            <?php endif; ?>
+            
+            <!-- Galería de miniaturas -->
+            <?php if (count($fotos) > 1): ?>
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <?php foreach ($fotos as $foto): ?>
+                        <div class="relative group cursor-pointer">
+                            <img src="<?php echo assetUrl($foto['nombre_archivo']); ?>" 
+                                alt="<?php echo htmlspecialchars($foto['descripcion'] ?: 'Foto de la propiedad'); ?>" 
+                                class="w-full h-24 object-cover rounded-lg shadow-md transition-transform duration-200 group-hover:scale-105">
+                            
+                            <?php if ($foto['es_portada']): ?>
+                                <div class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                                    Portada
+                                </div>
+                            <?php endif; ?>
+                            
+                            <?php if (!empty($foto['descripcion'])): ?>
+                                <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-2 rounded-b-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    <?php echo htmlspecialchars($foto['descripcion']); ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        <?php else: ?>
+            <!-- Sin fotos -->
+            <div class="bg-gray-100 rounded-lg p-8 text-center">
+                <i class="fas fa-images text-4xl text-gray-400 mb-4"></i>
+                <p class="text-gray-600">Esta propiedad aún no tiene fotos</p>
+                <a href="<?= prettyUrl('propiedad', 'edit', $propiedad['id_propiedad']) ?>" 
+                class="inline-block mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
+                <i class="fas fa-plus mr-2"></i>Agregar Fotos
+                </a>
+            </div>
+        <?php endif; ?>
+    </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Información principal -->

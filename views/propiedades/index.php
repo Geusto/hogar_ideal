@@ -90,16 +90,31 @@ ob_start();
         <?php else: ?>
             <?php foreach ($propiedades as $propiedad): ?>
                 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                    <?php if (!empty($propiedad['portada'])): ?>
-                        <img src="<?php echo assetUrl($propiedad['portada']); ?>" alt="Portada" style="width:100%; max-height:180px; object-fit:cover;">
-                    <?php endif; ?>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-semibold text-gray-800"><?php echo ucfirst($propiedad['tipo']); ?> en <?php echo htmlspecialchars($propiedad['direccion']); ?></h3>
+                    <!-- Imagen de portada -->
+                    <div class="relative" style="height: 180px; overflow: hidden;">
+                        <?php if (!empty($propiedad['foto_portada'])): ?>
+                            <!-- Foto de portada de la nueva implementación -->
+                            <img src="<?php echo assetUrl($propiedad['foto_portada']['nombre_archivo']); ?>" 
+                                alt="<?php echo htmlspecialchars($propiedad['foto_portada']['descripcion'] ?: 'Foto de portada'); ?>" 
+                                class="w-full h-full object-cover">
+                        <?php else: ?>
+                            <!-- Imagen por defecto -->
+                            <img src="<?php echo getDefaultPropertyImage(); ?>" 
+                                alt="Imagen por defecto" 
+                                class="w-full h-full object-contain">
+                        <?php endif; ?>
+                        
+                        <!-- Indicador de estado sobre la imagen -->
+                        <div class="absolute top-2 right-2">
                             <span class="px-2 py-1 text-xs font-semibold rounded-full 
-                                <?php echo $propiedad['estado'] === 'disponible' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
+                                <?php echo $propiedad['estado'] === 'disponible' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'; ?>">
                                 <?php echo ucfirst($propiedad['estado']); ?>
                             </span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold text-gray-800"><?php echo ucfirst($propiedad['tipo']); ?> en <?php echo htmlspecialchars($propiedad['direccion']); ?></h3>
                         </div>
                         
                         <div class="grid grid-cols-2 gap-4 mb-4 text-sm text-gray-600">

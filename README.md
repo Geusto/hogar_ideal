@@ -380,11 +380,14 @@ http://localhost/hogar-ideal/index.php?controller=propiedad&action=edit&id=123
 - **Navegación consistente:** Header y footer unificados
 - **Responsive design:** Compatible con móviles y desktop
 
-### ✅ Subida de Imágenes
-- **Campo portada:** Imagen de fachada para propiedades
-- **Validación de archivos:** Tipos permitidos (jpg, jpeg, png, gif, webp)
-- **Carpeta uploads:** Almacenamiento seguro de imágenes
-- **Visualización:** Muestra de imágenes en listado y detalles
+### ✅ Sistema de Galería de Fotos
+- **Galería múltiple:** Reemplaza el sistema anterior de una sola foto de portada
+- **Subida múltiple:** Drag & drop para múltiples archivos simultáneos
+- **Gestión de portada:** Cambio dinámico de foto de portada
+- **Validación avanzada:** Tipos permitidos (jpg, jpeg, png, gif, webp)
+- **Carpeta uploads:** Almacenamiento seguro con nombres únicos
+- **Interfaz modal:** Gestión centralizada de fotos por propiedad
+- **Responsive:** Adaptación automática a diferentes dispositivos
 
 ### ✅ Funciones Auxiliares
 - **Validación de datos:** Limpieza y sanitización de entrada
@@ -793,6 +796,7 @@ El proyecto incluye documentación detallada organizada en la carpeta `docs/`:
 
 ### 📖 Documentación Principal
 - **[docs/README.md](docs/README.md)** - Índice completo de toda la documentación
+- **[docs/10-galeria-fotos.md](docs/10-galeria-fotos.md)** - Sistema de galería de fotos para propiedades
 
 ---
 
