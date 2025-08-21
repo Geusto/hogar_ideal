@@ -43,22 +43,55 @@ class Propiedad {
     }
     
     public function getAll() {
-        $sql = "SELECT * FROM propiedades ORDER BY fecha_creacion DESC";
-        $stmt = $this->pdo->query($sql);
+        $stmt = $this->pdo->query("SELECT p.*, c.nombre_completo as cliente_vendedor, a.nombre_completo as agente_nombre 
+        FROM propiedad p 
+        LEFT JOIN cliente c ON p.id_cliente_vendedor = c.id_cliente 
+        LEFT JOIN agente a ON p.id_agente = a.id_agente 
+        ORDER BY p.id_propiedad DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
     public function getById($id) {
-        $sql = "SELECT * FROM propiedades WHERE id = ?";
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->pdo->prepare("SELECT p.*, c.nombre_completo as cliente_vendedor, a.nombre_completo as agente_nombre 
+        FROM propiedad p 
+        LEFT JOIN cliente c ON p.id_cliente_vendedor = c.id_cliente 
+        LEFT JOIN agente a ON p.id_agente = a.id_agente 
+        WHERE p.id_propiedad = ?");
         $stmt->execute([$id]);
-        return $stmt->fetch();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    public function search($query) {
+        $sql = "SELECT p.*, c.nombre_completo as cliente_vendedor, a.nombre_completo as agente_nombre 
+                FROM propiedad p 
+                LEFT JOIN cliente c ON p.id_cliente_vendedor = c.id_cliente 
+                LEFT JOIN agente a ON p.id_agente = a.id_agente 
+                WHERE p.direccion LIKE ? OR c.nombre_completo LIKE ? OR a.nombre_completo LIKE ?
+                ORDER BY p.id_propiedad DESC";
+        
+        $searchTerm = "%$query%";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$searchTerm, $searchTerm, $searchTerm]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
     public function create($datos) {
-        $sql = "INSERT INTO propiedades (titulo, descripcion, precio) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO propiedad (tipo, direccion, habitaciones, banos, superficie, precio, estado, portada, id_cliente_vendedor, id_agente) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([$datos['titulo'], $datos['descripcion'], $datos['precio']]);
+        return $stmt->execute([
+            $datos['tipo'],
+            $datos['direccion'],
+            $datos['habitaciones'],
+            $datos['banos'],
+            $datos['superficie'],
+            $datos['precio'],
+            $datos['estado'],
+            $datos['portada'],
+            $datos['id_cliente_vendedor'],
+            $datos['id_agente']
+        ]);
     }
 }
 ```
@@ -69,6 +102,7 @@ class Propiedad {
 - ✅ Maneja la comunicación con la base de datos
 - ✅ Valida datos internamente
 - ✅ Es reutilizable
+- ✅ **Nuevo**: Sistema de búsqueda por texto en múltiples campos
 
 ### 🎮 Controlador (Controller)
 **Responsabilidad**: Recibe peticiones, procesa datos y decide qué vista mostrar
@@ -83,14 +117,47 @@ class PropiedadController {
     }
     
     public function index() {
-        // Obtener datos del modelo
-        $propiedades = $this->propiedadModel->getAll();
+        // Verificar si hay filtros aplicados
+        $estado = $_GET['estado'] ?? '';
+        $tipo_propiedad = $_GET['tipo_propiedad'] ?? '';
         
-        // Pasar datos a la vista
+        if (!empty($estado)) {
+            $propiedades = $this->propiedadModel->getByEstado($estado);
+        } elseif (!empty($tipo_propiedad)) {
+            $propiedades = $this->propiedadModel->getByTipo($tipo_propiedad);
+        } else {
+            $propiedades = $this->propiedadModel->getAll();
+        }
+        
+        // Obtener fotos de portada para cada propiedad
+        foreach ($propiedades as &$propiedad) {
+            $fotoPortada = $this->propiedadModel->getFotoPortada($propiedad['id_propiedad']);
+            $propiedad['foto_portada'] = $fotoPortada;
+        }
+        
         include 'views/propiedades/index.php';
     }
     
-    public function crear() {
+    public function search() {
+        $query = $_GET['q'] ?? '';
+        $propiedades = [];
+        
+        if (!empty($query)) {
+            $propiedades = $this->propiedadModel->search($query);
+        } else {
+            $propiedades = $this->propiedadModel->getAll();
+        }
+        
+        // Obtener fotos de portada para cada propiedad
+        foreach ($propiedades as &$propiedad) {
+            $fotoPortada = $this->propiedadModel->getFotoPortada($propiedad['id_propiedad']);
+            $propiedad['foto_portada'] = $fotoPortada;
+        }
+        
+        include 'views/propiedades/index.php';
+    }
+    
+    public function create() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Validar datos
             $datos = $this->validarDatos($_POST);
@@ -98,9 +165,9 @@ class PropiedadController {
             if ($datos) {
                 // Guardar en el modelo
                 if ($this->propiedadModel->create($datos)) {
-                    redirect('propiedades', 'index', null, ['mensaje' => 'Propiedad creada']);
+                    redirect('propiedad', 'index', null, ['msg' => 'Propiedad creada exitosamente']);
                 } else {
-                    redirect('propiedades', 'crear', null, ['error' => 'Error al crear']);
+                    redirect('propiedad', 'create', null, ['error' => 'Error al crear la propiedad']);
                 }
             }
         }
@@ -112,12 +179,16 @@ class PropiedadController {
     private function validarDatos($datos) {
         $errores = [];
         
-        if (empty($datos['titulo'])) {
-            $errores[] = 'El título es obligatorio';
+        if (empty($datos['direccion'])) {
+            $errores[] = 'La dirección es obligatoria';
         }
         
         if (empty($datos['precio']) || !is_numeric($datos['precio'])) {
             $errores[] = 'El precio debe ser un número válido';
+        }
+        
+        if (empty($datos['superficie']) || !is_numeric($datos['superficie'])) {
+            $errores[] = 'La superficie debe ser un número válido';
         }
         
         return empty($errores) ? $datos : false;
@@ -131,64 +202,180 @@ class PropiedadController {
 - ✅ Coordina con el modelo
 - ✅ Decide qué vista mostrar
 - ✅ Maneja redirecciones
+- ✅ **Nuevo**: Sistema de búsqueda y filtros combinados
+- ✅ **Nuevo**: Gestión de fotos de portada
 
 ### 🖼️ Vista (View)
 **Responsabilidad**: Presenta la información al usuario de forma atractiva
 
 ```php
 <!-- Ejemplo: views/propiedades/index.php -->
-<?php include 'views/layouts/main.php'; ?>
+<?php $title = 'Propiedades - Hogar Ideal'; ob_start(); ?>
 
 <div class="container mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
         <h1 class="text-3xl font-bold text-gray-800">Propiedades</h1>
-        <a href="<?php echo prettyUrl('propiedades', 'crear'); ?>" 
-           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Nueva Propiedad
-        </a>
-    </div>
-    
-    <!-- Mostrar mensajes -->
-    <?php if (isset($_GET['mensaje'])): ?>
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-            <?php echo htmlspecialchars($_GET['mensaje']); ?>
+        <div class="flex gap-4">
+            <a href="<?= prettyUrl('home', 'index') ?>" 
+               class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Volver
+            </a>
+            <a href="<?= prettyUrl('propiedad', 'create') ?>" 
+               class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                <i class="fas fa-plus mr-2"></i>Nueva Propiedad
+            </a>
         </div>
-    <?php endif; ?>
-    
+    </div>
+
+    <!-- Filtros y búsqueda -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <form method="GET" action="<?= prettyUrl('propiedad', 'search') ?>" class="md:col-span-2">
+                <div class="flex">
+                    <input type="text" name="q" placeholder="Buscar propiedades..." 
+                           value="<?php echo htmlspecialchars($_GET['q'] ?? ''); ?>"
+                           class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-r-lg hover:bg-blue-600">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+            
+            <select id="filtroEstado" onchange="aplicarFiltro()" 
+                    class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Todos los estados</option>
+                <option value="disponible" <?php echo (isset($_GET['estado']) && $_GET['estado'] === 'disponible') ? 'selected' : ''; ?>>Disponible</option>
+                <option value="vendida" <?php echo (isset($_GET['estado']) && $_GET['estado'] === 'vendida') ? 'selected' : ''; ?>>Vendida</option>
+            </select>
+            
+            <select id="filtroTipo" name="tipo_propiedad" onchange="aplicarFiltro()" 
+                    class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Todos los tipos</option>
+                <option value="casa" <?php echo (isset($_GET['tipo_propiedad']) && $_GET['tipo_propiedad'] === 'casa') ? 'selected' : ''; ?>>Casa</option>
+                <option value="apartamento" <?php echo (isset($_GET['tipo_propiedad']) && $_GET['tipo_propiedad'] === 'apartamento') ? 'selected' : ''; ?>>Apartamento</option>
+                <option value="terreno" <?php echo (isset($_GET['tipo_propiedad']) && $_GET['tipo_propiedad'] === 'terreno') ? 'selected' : ''; ?>>Terreno</option>
+                <option value="local" <?php echo (isset($_GET['tipo_propiedad']) && $_GET['tipo_propiedad'] === 'local') ? 'selected' : ''; ?>>Local Comercial</option>
+            </select>
+        </div>
+        
+        <!-- Botón para limpiar filtros -->
+        <?php if (isset($_GET['estado']) || isset($_GET['tipo_propiedad']) || isset($_GET['q'])): ?>
+            <div class="mt-4">
+                <a href="<?= prettyUrl('propiedad', 'index') ?>" 
+                   class="text-blue-500 hover:text-blue-700 text-sm font-medium">
+                    <i class="fas fa-times mr-1"></i>Limpiar filtros
+                </a>
+            </div>
+        <?php endif; ?>
+    </div>
+
     <!-- Lista de propiedades -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <?php foreach ($propiedades as $propiedad): ?>
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <img src="<?php echo $propiedad['imagen']; ?>" 
-                     alt="<?php echo htmlspecialchars($propiedad['titulo']); ?>"
-                     class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <h3 class="text-xl font-semibold text-gray-800">
-                        <?php echo htmlspecialchars($propiedad['titulo']); ?>
-                    </h3>
-                    <p class="text-gray-600 mt-2">
-                        <?php echo htmlspecialchars($propiedad['descripcion']); ?>
-                    </p>
-                    <p class="text-2xl font-bold text-blue-600 mt-2">
-                        $<?php echo number_format($propiedad['precio']); ?>
-                    </p>
-                    <div class="mt-4 flex space-x-2">
-                        <a href="<?php echo prettyUrl('propiedades', 'editar', $propiedad['id']); ?>" 
-                           class="bg-yellow-500 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm">
-                            Editar
-                        </a>
-                        <a href="<?php echo prettyUrl('propiedades', 'ver', $propiedad['id']); ?>" 
-                           class="bg-green-500 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">
-                            Ver
-                        </a>
+        <?php if (empty($propiedades)): ?>
+            <div class="col-span-full text-center py-12">
+                <i class="fas fa-home text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-600 mb-2">No hay propiedades</h3>
+                <p class="text-gray-500">
+                    <?php if (isset($_GET['q']) || isset($_GET['estado']) || isset($_GET['tipo_propiedad'])): ?>
+                        No se encontraron propiedades con los filtros aplicados
+                    <?php else: ?>
+                        Comienza agregando tu primera propiedad
+                    <?php endif; ?>
+                </p>
+            </div>
+        <?php else: ?>
+            <?php foreach ($propiedades as $propiedad): ?>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <!-- Imagen de portada -->
+                    <div class="relative" style="height: 180px; overflow: hidden;">
+                        <?php if (!empty($propiedad['foto_portada'])): ?>
+                            <img src="<?php echo assetUrl($propiedad['foto_portada']['nombre_archivo']); ?>" 
+                                 alt="<?php echo htmlspecialchars($propiedad['foto_portada']['descripcion'] ?: 'Foto de portada'); ?>" 
+                                 class="w-full h-full object-cover">
+                        <?php else: ?>
+                            <img src="<?php echo getDefaultPropertyImage(); ?>" 
+                                 alt="Imagen por defecto" 
+                                 class="w-full h-full object-contain">
+                        <?php endif; ?>
+                        
+                        <!-- Indicador de estado sobre la imagen -->
+                        <div class="absolute top-2 right-2">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                                <?php echo $propiedad['estado'] === 'disponible' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'; ?>">
+                                <?php echo ucfirst($propiedad['estado']); ?>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="mb-4">
+                            <h3 class="text-xl font-semibold text-gray-800">
+                                <?php echo ucfirst($propiedad['tipo']); ?> en <?php echo htmlspecialchars($propiedad['direccion']); ?>
+                            </h3>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-4 text-sm text-gray-600">
+                            <?php if ($propiedad['habitaciones']): ?>
+                                <div><i class="fas fa-bed mr-2"></i><?php echo $propiedad['habitaciones']; ?> hab.</div>
+                            <?php endif; ?>
+                            <?php if ($propiedad['banos']): ?>
+                                <div><i class="fas fa-bath mr-2"></i><?php echo $propiedad['banos']; ?> baños</div>
+                            <?php endif; ?>
+                            <div><i class="fas fa-ruler-combined mr-2"></i><?php echo $propiedad['superficie']; ?> m²</div>
+                            <div><i class="fas fa-user mr-2"></i><?php echo htmlspecialchars($propiedad['cliente_vendedor'] ?? 'N/A'); ?></div>
+                        </div>
+                        
+                        <div class="text-2xl font-bold text-blue-600 mb-4">
+                            $<?php echo number_format($propiedad['precio'], 0, ',', '.'); ?>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <div class="flex space-x-2">
+                                <a href="<?= prettyUrl('propiedad', 'show', $propiedad['id_propiedad']) ?>" 
+                                   class="text-blue-500 hover:text-blue-700">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="<?= prettyUrl('propiedad', 'edit', $propiedad['id_propiedad']) ?>" 
+                                   class="text-green-500 hover:text-green-700">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="#" 
+                                   class="text-red-500 hover:text-red-700 btn-eliminar-propiedad"
+                                   data-url="<?= prettyUrl('propiedad', 'delete', $propiedad['id_propiedad']) ?>"
+                                   data-direccion="<?= htmlspecialchars($propiedad['direccion']) ?>"
+                                   title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                            <span class="text-sm text-gray-500">Agente: <?php echo htmlspecialchars($propiedad['agente_nombre'] ?? 'N/A'); ?></span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        <?php endforeach; ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 </div>
 
-<?php include 'views/layouts/footer.php'; ?>
+<script>
+    function aplicarFiltro() {
+        const estado = document.getElementById('filtroEstado').value;
+        const tipo = document.getElementById('filtroTipo').value;
+        
+        let url = '<?= prettyUrl('propiedad', 'index') ?>';
+        const params = new URLSearchParams();
+        if (estado) { params.set('estado', estado); }
+        if (tipo) { params.set('tipo_propiedad', tipo); }
+        const qs = params.toString();
+        if (qs) { url += '?' + qs; }
+        window.location.href = url;
+    }
+</script>
+
+<?php 
+$content = ob_get_clean();
+include 'views/layouts/main.php';
+?>
 ```
 
 **Características de la Vista:**
@@ -197,6 +384,9 @@ class PropiedadController {
 - ✅ Es reutilizable y modular
 - ✅ Usa datos pasados por el controlador
 - ✅ Maneja la seguridad de salida (htmlspecialchars)
+- ✅ **Nuevo**: Sistema de búsqueda y filtros integrado
+- ✅ **Nuevo**: Visualización de fotos de portada
+- ✅ **Nuevo**: Filtros dinámicos con JavaScript
 
 ---
 
@@ -206,16 +396,17 @@ class PropiedadController {
 ```
 controllers/
 ├── HomeController.php      # Dashboard principal
-├── PropiedadController.php # Gestión de propiedades
+├── PropiedadController.php # Gestión de propiedades con búsqueda
 ├── ClienteController.php   # Gestión de clientes
 ├── AgenteController.php    # Gestión de agentes
 └── VentaController.php     # Gestión de ventas
 
 models/
-├── Propiedad.php          # Lógica de propiedades
+├── Propiedad.php          # Lógica de propiedades con búsqueda
 ├── Cliente.php            # Lógica de clientes
 ├── Agente.php             # Lógica de agentes
-└── Venta.php              # Lógica de ventas
+├── Venta.php              # Lógica de ventas
+└── FotoPropiedad.php      # Lógica de galería de fotos
 
 views/
 ├── layouts/
@@ -224,10 +415,10 @@ views/
 ├── home/
 │   └── index.php          # Dashboard
 ├── propiedades/
-│   ├── index.php          # Lista de propiedades
+│   ├── index.php          # Lista con búsqueda y filtros
 │   ├── create.php         # Formulario de creación
-│   ├── edit.php           # Formulario de edición
-│   └── show.php           # Vista detallada
+│   ├── edit.php           # Formulario de edición con gestión de fotos
+│   └── show.php           # Vista detallada con galería
 └── [otros módulos...]
 ```
 
@@ -241,19 +432,36 @@ $controller = ucfirst($urlParts[0]) . 'Controller';
 $action = $urlParts[1] ?? 'index';
 $id = $urlParts[2] ?? null;
 
+// Mapeo de controladores
+$controllers = [
+    'home' => 'HomeController',
+    'propiedad' => 'PropiedadController',
+    'cliente' => 'ClienteController',
+    'agente' => 'AgenteController',
+    'venta' => 'VentaController'
+];
+
 // Cargar controlador
-if (file_exists("controllers/{$controller}.php")) {
-    require_once "controllers/{$controller}.php";
-    $controllerInstance = new $controller();
+if (isset($controllers[$urlParts[0]]) && file_exists("controllers/{$controllers[$urlParts[0]]}.php")) {
+    require_once "controllers/{$controllers[$urlParts[0]]}.php";
+    $controllerClass = $controllers[$urlParts[0]];
+    $controllerInstance = new $controllerClass();
     
     if (method_exists($controllerInstance, $action)) {
-        $controllerInstance->$action($id);
+        // Ejecutar la acción
+        if ($id !== null) {
+            $controllerInstance->$action($id);
+        } else {
+            $controllerInstance->$action();
+        }
     } else {
-        // Error 404
+        // Método no encontrado
+        http_response_code(404);
         include 'views/errors/404.php';
     }
 } else {
-    // Error 404
+    // Controlador no encontrado
+    http_response_code(404);
     include 'views/errors/404.php';
 }
 ```
@@ -264,43 +472,131 @@ if (file_exists("controllers/{$controller}.php")) {
 
 ### 1. Petición del Usuario
 ```
-Usuario hace clic en "Ver Propiedades"
+Usuario hace clic en "Ver Propiedades" o busca texto
 ↓
-URL: /propiedades
+URL: /propiedad o /propiedad/search?q=texto
 ↓
 index.php recibe la petición
 ```
 
 ### 2. Procesamiento del Controlador
 ```php
-// PropiedadController::index()
+// PropiedadController::index() o PropiedadController::search()
 public function index() {
-    // 1. Obtener datos del modelo
-    $propiedades = $this->propiedadModel->getAll();
+    // 1. Verificar filtros aplicados
+    $estado = $_GET['estado'] ?? '';
+    $tipo_propiedad = $_GET['tipo_propiedad'] ?? '';
     
-    // 2. Procesar datos si es necesario
-    foreach ($propiedades as &$propiedad) {
-        $propiedad['precio_formateado'] = number_format($propiedad['precio']);
+    // 2. Obtener datos del modelo según filtros
+    if (!empty($estado)) {
+        $propiedades = $this->propiedadModel->getByEstado($estado);
+    } elseif (!empty($tipo_propiedad)) {
+        $propiedades = $this->propiedadModel->getByTipo($tipo_propiedad);
+    } else {
+        $propiedades = $this->propiedadModel->getAll();
     }
     
-    // 3. Incluir la vista con los datos
+    // 3. Procesar datos adicionales (fotos de portada)
+    foreach ($propiedades as &$propiedad) {
+        $fotoPortada = $this->propiedadModel->getFotoPortada($propiedad['id_propiedad']);
+        $propiedad['foto_portada'] = $fotoPortada;
+    }
+    
+    // 4. Incluir la vista con los datos
+    include 'views/propiedades/index.php';
+}
+
+public function search() {
+    $query = $_GET['q'] ?? '';
+    $propiedades = [];
+    
+    if (!empty($query)) {
+        $propiedades = $this->propiedadModel->search($query);
+    } else {
+        $propiedades = $this->propiedadModel->getAll();
+    }
+    
+    // Obtener fotos de portada para cada propiedad
+    foreach ($propiedades as &$propiedad) {
+        $fotoPortada = $this->propiedadModel->getFotoPortada($propiedad['id_propiedad']);
+        $propiedad['foto_portada'] = $fotoPortada;
+    }
+    
     include 'views/propiedades/index.php';
 }
 ```
 
 ### 3. Respuesta de la Vista
 ```php
-<!-- La vista recibe $propiedades y los muestra -->
-<?php foreach ($propiedades as $propiedad): ?>
-    <div class="propiedad">
-        <h3><?php echo htmlspecialchars($propiedad['titulo']); ?></h3>
-        <p>$<?php echo $propiedad['precio_formateado']; ?></p>
+<!-- La vista recibe $propiedades y los muestra con búsqueda y filtros -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- Formulario de búsqueda -->
+        <form method="GET" action="<?= prettyUrl('propiedad', 'search') ?>" class="md:col-span-2">
+            <div class="flex">
+                <input type="text" name="q" placeholder="Buscar propiedades..." 
+                       value="<?php echo htmlspecialchars($_GET['q'] ?? ''); ?>"
+                       class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-r-lg hover:bg-blue-600">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+        
+        <!-- Filtros por estado y tipo -->
+        <select id="filtroEstado" onchange="aplicarFiltro()">
+            <option value="">Todos los estados</option>
+            <option value="disponible">Disponible</option>
+            <option value="vendida">Vendida</option>
+        </select>
+        
+        <select id="filtroTipo" onchange="aplicarFiltro()">
+            <option value="">Todos los tipos</option>
+            <option value="casa">Casa</option>
+            <option value="apartamento">Apartamento</option>
+            <option value="terreno">Terreno</option>
+            <option value="local">Local Comercial</option>
+        </select>
     </div>
-<?php endforeach; ?>
+</div>
+
+<!-- Lista de propiedades con fotos de portada -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <?php foreach ($propiedades as $propiedad): ?>
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <!-- Imagen de portada -->
+            <div class="relative" style="height: 180px; overflow: hidden;">
+                <?php if (!empty($propiedad['foto_portada'])): ?>
+                    <img src="<?php echo assetUrl($propiedad['foto_portada']['nombre_archivo']); ?>" 
+                         alt="<?php echo htmlspecialchars($propiedad['foto_portada']['descripcion'] ?: 'Foto de portada'); ?>" 
+                         class="w-full h-full object-cover">
+                <?php else: ?>
+                    <img src="<?php echo getDefaultPropertyImage(); ?>" 
+                         alt="Imagen por defecto" 
+                         class="w-full h-full object-contain">
+                <?php endif; ?>
+            </div>
+            
+            <div class="p-6">
+                <h3 class="text-xl font-semibold text-gray-800">
+                    <?php echo ucfirst($propiedad['tipo']); ?> en <?php echo htmlspecialchars($propiedad['direccion']); ?>
+                </h3>
+                <p class="text-2xl font-bold text-blue-600 mt-2">
+                    $<?php echo number_format($propiedad['precio'], 0, ',', '.'); ?>
+                </p>
+            </div>
+        </div>
+    <?php endforeach; ?>
+</div>
 ```
 
 ### 4. Resultado Final
-El usuario ve una página HTML con la lista de propiedades formateada.
+El usuario ve una página HTML con:
+- Formulario de búsqueda por texto
+- Filtros por estado y tipo de propiedad
+- Lista de propiedades con fotos de portada
+- Sistema de filtros dinámicos
+- Mensajes cuando no hay resultados
 
 ---
 
@@ -319,6 +615,7 @@ $propiedades = $propiedadModel->getAll();
 
 // Se puede usar en:
 // - PropiedadController::index()
+// - PropiedadController::search()
 // - HomeController::dashboard()
 // - VentaController::crear()
 ```
@@ -330,6 +627,12 @@ class PropiedadTest {
     public function testGetAll() {
         $model = new Propiedad();
         $result = $model->getAll();
+        $this->assertIsArray($result);
+    }
+    
+    public function testSearch() {
+        $model = new Propiedad();
+        $result = $model->search('casa');
         $this->assertIsArray($result);
     }
 }
@@ -352,27 +655,31 @@ class PropiedadTest {
 ### 1. Nomenclatura Consistente
 ```php
 // Controladores: PascalCase + "Controller"
-class PropiedadController {}
-class ClienteController {}
+class PropiedadController {}  // ✅ Correcto
+class ClienteController {}     // ✅ Correcto
 
 // Modelos: PascalCase (singular)
-class Propiedad {}
-class Cliente {}
+class Propiedad {}            // ✅ Correcto
+class Cliente {}              // ✅ Correcto
 
 // Vistas: camelCase o kebab-case
-views/propiedades/index.php
-views/propiedades/create.php
+views/propiedades/index.php   // ✅ Correcto
+views/propiedades/create.php  // ✅ Correcto
 ```
 
 ### 2. Validación en el Controlador
 ```php
-public function crear() {
+public function create() {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $datos = $this->validarDatos($_POST);
         if ($datos) {
             // Procesar datos válidos
+            if ($this->propiedadModel->create($datos)) {
+                redirect('propiedad', 'index', null, ['msg' => 'Propiedad creada']);
+            }
         } else {
             // Mostrar errores
+            redirect('propiedad', 'create', null, ['error' => 'Datos inválidos']);
         }
     }
     // Mostrar formulario
@@ -382,30 +689,54 @@ public function crear() {
 ### 3. Escape de Datos en Vistas
 ```php
 // ✅ Correcto
-echo htmlspecialchars($propiedad['titulo']);
+echo htmlspecialchars($propiedad['direccion']);
 
 // ❌ Incorrecto
-echo $propiedad['titulo'];
+echo $propiedad['direccion'];
 ```
 
 ### 4. Uso de Funciones Helper
 ```php
 // En lugar de escribir URLs manualmente
-<a href="index.php?controller=propiedades&action=crear">
+<a href="index.php?controller=propiedad&action=create">
 
 // Usar funciones helper
-<a href="<?php echo prettyUrl('propiedades', 'crear'); ?>">
+<a href="<?php echo prettyUrl('propiedad', 'create'); ?>">
 ```
 
 ### 5. Manejo de Errores
 ```php
+// ✅ Correcto - Manejar errores
 try {
     $resultado = $this->modelo->operacion();
     if ($resultado) {
-        redirect('controlador', 'accion', null, ['mensaje' => 'Éxito']);
+        redirect('propiedad', 'index', null, ['msg' => 'Éxito']);
     }
 } catch (Exception $e) {
-    redirect('controlador', 'accion', null, ['error' => $e->getMessage()]);
+    redirect('propiedad', 'index', null, ['error' => $e->getMessage()]);
+}
+```
+
+### 6. Sistema de Búsqueda
+```php
+// ✅ Correcto - Búsqueda con validación
+public function search() {
+    $query = $_GET['q'] ?? '';
+    $propiedades = [];
+    
+    if (!empty($query)) {
+        $propiedades = $this->propiedadModel->search($query);
+    } else {
+        $propiedades = $this->propiedadModel->getAll();
+    }
+    
+    // Procesar datos adicionales
+    foreach ($propiedades as &$propiedad) {
+        $fotoPortada = $this->propiedadModel->getFotoPortada($propiedad['id_propiedad']);
+        $propiedad['foto_portada'] = $fotoPortada;
+    }
+    
+    include 'views/propiedades/index.php';
 }
 ```
 
@@ -427,8 +758,11 @@ En "Hogar Ideal", este patrón permite que el sistema sea:
 - Sencillo de mantener y actualizar
 - Escalable para nuevas funcionalidades
 - Robusto y bien estructurado
+- **Capaz de manejar búsquedas complejas**
+- **Eficiente en la gestión de archivos multimedia**
 
 Para más información sobre implementaciones específicas, consulta:
 - [Documentación de Entidades](04-entities/)
 - [Funciones Helper](05-functions/)
-- [Esquema de Base de Datos](03-database-schema.md) 
+- [Esquema de Base de Datos](03-database-schema.md)
+- [Sistema de Galería de Fotos](10-galeria-fotos.md) 

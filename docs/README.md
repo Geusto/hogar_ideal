@@ -18,11 +18,13 @@ Bienvenido a la documentación completa del sistema "Hogar Ideal", una aplicaci�
 - **[04-entities/propiedad.md](04-entities/propiedad.md)** - Documentación de la entidad Propiedad *(próximamente)*
 - **[04-entities/cliente.md](04-entities/cliente.md)** - Documentación de la entidad Cliente *(próximamente)*
 - **[04-entities/venta.md](04-entities/venta.md)** - Documentación de la entidad Venta *(próximamente)*
+- **[04-entities/foto-propiedad.md](04-entities/foto-propiedad.md)** - Documentación del sistema de galería de fotos *(próximamente)*
 
 ### 🔧 Funciones Helper
 - **[05-functions/url-helpers.md](05-functions/url-helpers.md)** - Funciones de generación de URLs
 - **[05-functions/redirect.md](05-functions/redirect.md)** - Sistema de redirecciones
 - **[05-functions/mostrar-mensaje.md](05-functions/mostrar-mensaje.md)** - Sistema de notificaciones toast
+- **[05-functions/busqueda.md](05-functions/busqueda.md)** - Sistema de búsqueda y filtros *(próximamente)*
 
 ### 📄 Reportes y PDF
 - **[06-reportes/generacion-pdf.md](06-reportes/generacion-pdf.md)** - Generación de reportes PDF con mPDF
@@ -35,14 +37,16 @@ Bienvenido a la documentación completa del sistema "Hogar Ideal", una aplicaci�
 ## 🎯 Características Principales
 
 ### ✨ Funcionalidades Implementadas
-- **Gestión completa de propiedades** (CRUD)
-- **Sistema de agentes inmobiliarios**
+- **Gestión completa de propiedades** (CRUD) con sistema de galería de fotos múltiples
+- **Sistema de agentes inmobiliarios** con zonas asignadas
 - **Gestión de clientes** (compradores y vendedores)
-- **Sistema de ventas** con comisiones
+- **Sistema de ventas** con comisiones y seguimiento
 - **Programación de visitas** a propiedades
+- **Sistema de búsqueda avanzada** por texto, tipo y estado
 - **Interfaz moderna** con Tailwind CSS
 - **URLs amigables** para mejor SEO
 - **Sistema de mensajes** para feedback al usuario
+- **Gestión de archivos** con validación de seguridad
 
 ### 🛠️ Tecnologías Utilizadas
 - **Backend**: PHP 8.1+
@@ -99,7 +103,8 @@ hogar ideal/
 │   ├── Propiedad.php             # Modelo de propiedades
 │   ├── Cliente.php               # Modelo de clientes
 │   ├── Agente.php                # Modelo de agentes
-│   └── Venta.php                 # Modelo de ventas
+│   ├── Venta.php                 # Modelo de ventas
+│   └── FotoPropiedad.php         # Modelo de galería de fotos
 ├── views/
 │   ├── layouts/
 │   │   ├── main.php              # Layout principal
@@ -107,10 +112,10 @@ hogar ideal/
 │   ├── home/
 │   │   └── index.php             # Dashboard
 │   ├── propiedades/
-│   │   ├── index.php             # Lista de propiedades
+│   │   ├── index.php             # Lista de propiedades con búsqueda
 │   │   ├── create.php            # Formulario de creación
-│   │   ├── edit.php              # Formulario de edición
-│   │   └── show.php              # Vista detallada
+│   │   ├── edit.php              # Formulario de edición con gestión de fotos
+│   │   └── show.php              # Vista detallada con galería
 │   ├── clientes/
 │   │   ├── createCliente.php     # Formulario de creación
 │   │   ├── editCliente.php       # Formulario de edición
@@ -120,13 +125,14 @@ hogar ideal/
 │       ├── edit.php              # Formulario de edición
 │       └── index.php             # Lista de agentes
 ├── includes/
-│   └── functions.php             # Funciones auxiliares
-├── uploads/                      # Archivos subidos
+│   └── functions.php             # Funciones auxiliares y helpers
+├── uploads/                      # Archivos subidos (fotos de propiedades)
 ├── db/
-│   └── hogar_ideal.sql          # Script de base de datos
+│   ├── hogar_ideal.sql          # Script de base de datos principal
+│   └── crear_tabla_fotos.sql    # Script para tabla de fotos
 ├── docs/                         # Documentación del proyecto
-├── index.php                     # Punto de entrada
-└── .htaccess                     # Configuración de Apache
+├── index.php                     # Punto de entrada principal
+└── .htaccess                     # Configuración de Apache para URLs amigables
 ```
 
 ---
@@ -135,22 +141,22 @@ hogar ideal/
 
 ### Rutas Principales
 - **Dashboard**: `/` o `/home`
-- **Propiedades**: `/propiedades`
-- **Crear Propiedad**: `/propiedades/crear`
-- **Editar Propiedad**: `/propiedades/editar/123`
-- **Agentes**: `/agentes`
-- **Clientes**: `/clientes`
+- **Propiedades**: `/propiedad`
+- **Crear Propiedad**: `/propiedad/create`
+- **Editar Propiedad**: `/propiedad/edit/123`
+- **Agentes**: `/agente`
+- **Clientes**: `/cliente`
 
 ### Ejemplos de URLs Amigables
 ```php
 // Generar URLs
-prettyUrl('propiedades', 'crear')     // → /propiedades/crear
-prettyUrl('propiedades', 'editar', 123) // → /propiedades/editar/123
-prettyUrl('agentes', 'ver', 5)        // → /agentes/ver/5
+prettyUrl('propiedad', 'create')     // → /propiedad/create
+prettyUrl('propiedad', 'edit', 123)  // → /propiedad/edit/123
+prettyUrl('agente', 'show', 5)       // → /agente/show/5
 
 // Redirecciones
-redirect('propiedades', 'index')       // → Redirige a /propiedades
-redirect('propiedades', 'crear', null, ['mensaje' => 'Éxito'])
+redirect('propiedad', 'index')       // → Redirige a /propiedad
+redirect('propiedad', 'create', null, ['msg' => 'Éxito'])
 ```
 
 ---
@@ -158,16 +164,18 @@ redirect('propiedades', 'crear', null, ['mensaje' => 'Éxito'])
 ## 🗄️ Base de Datos
 
 ### Entidades Principales
-1. **agente** - Agentes inmobiliarios
+1. **agente** - Agentes inmobiliarios con zonas asignadas
 2. **cliente** - Compradores y vendedores
-3. **propiedad** - Propiedades inmobiliarias
-4. **venta** - Transacciones de venta
-5. **visita** - Visitas programadas
+3. **propiedad** - Propiedades inmobiliarias con sistema de fotos
+4. **fotos_propiedad** - Galería de fotos múltiples por propiedad
+5. **venta** - Transacciones de venta con comisiones
+6. **visita** - Visitas programadas a propiedades
 
 ### Relaciones
 - Un agente puede gestionar múltiples propiedades
 - Un cliente puede ser comprador y/o vendedor
 - Una propiedad tiene un vendedor y un agente asignado
+- Una propiedad puede tener múltiples fotos (una como portada)
 - Una venta involucra propiedad, comprador, vendedor y agente
 - Las visitas conectan clientes, propiedades y agentes
 
@@ -179,17 +187,20 @@ redirect('propiedades', 'crear', null, ['mensaje' => 'Éxito'])
 - Maneja la lógica de negocio
 - Comunica con la base de datos
 - Valida datos internamente
+- **Nuevo**: Sistema de gestión de fotos múltiples
 
 ### Vista (Views)
 - Presenta la información al usuario
 - No contiene lógica de negocio
 - Usa datos pasados por el controlador
+- **Nuevo**: Modal de gestión de fotos y galería responsive
 
 ### Controlador (Controllers)
 - Recibe peticiones HTTP
 - Coordina entre modelo y vista
 - Valida datos de entrada
 - Maneja redirecciones
+- **Nuevo**: Sistema de búsqueda y gestión de archivos
 
 ---
 
@@ -198,23 +209,30 @@ redirect('propiedades', 'crear', null, ['mensaje' => 'Éxito'])
 ### Generación de URLs
 ```php
 // URLs tradicionales
-url('propiedades', 'crear')
-// → index.php?controller=propiedades&action=crear
+url('propiedad', 'create')
+// → index.php?controller=propiedad&action=create
 
 // URLs amigables
-prettyUrl('propiedades', 'crear')
-// → /propiedades/crear
+prettyUrl('propiedad', 'create')
+// → /propiedad/create
 ```
 
 ### Redirecciones
 ```php
 // Redirección simple
-redirect('propiedades', 'index');
+redirect('propiedad', 'index');
 
 // Redirección con mensaje
-redirect('propiedades', 'index', null, [
-    'mensaje' => 'Propiedad creada exitosamente'
+redirect('propiedad', 'index', null, [
+    'msg' => 'Propiedad creada exitosamente'
 ]);
+```
+
+### Sistema de Búsqueda
+```php
+// Búsqueda por texto en direcciones y nombres
+// Filtros por tipo y estado de propiedad
+// Combinación de búsqueda y filtros
 ```
 
 ---
@@ -225,6 +243,12 @@ redirect('propiedades', 'index', null, [
 - Todos los datos de entrada se validan
 - Uso de prepared statements
 - Escape de datos de salida con `htmlspecialchars()`
+
+### Gestión de Archivos
+- Validación de tipos de archivo permitidos
+- Límites de tamaño de archivo
+- Nombres únicos para evitar conflictos
+- Sanitización de nombres de archivo
 
 ### URLs Seguras
 - Sistema de URLs amigables oculta la estructura
@@ -238,33 +262,41 @@ redirect('propiedades', 'index', null, [
 ### Sistema de Mensajes
 ```php
 // En controladores
-redirect('propiedades', 'index', null, [
-    'mensaje' => 'Operación exitosa'
+redirect('propiedad', 'index', null, [
+    'msg' => 'Operación exitosa'
 ]);
 
 // En vistas
-<?php if (isset($_GET['mensaje'])): ?>
+<?php if (isset($_GET['msg'])): ?>
     <div class="alert alert-success">
-        <?php echo htmlspecialchars($_GET['mensaje']); ?>
+        <?php echo htmlspecialchars($_GET['msg']); ?>
     </div>
 <?php endif; ?>
 ```
 
-### Filtros y Búsqueda
-- Filtros por tipo de propiedad
-- Búsqueda en tiempo real
-- Ordenamiento por precio, fecha, etc.
+### Búsqueda y Filtros
+- **Búsqueda por texto**: En direcciones, nombres de clientes y agentes
+- **Filtros por tipo**: Casa, apartamento, terreno, local comercial
+- **Filtros por estado**: Disponible, vendida
+- **Combinación**: Búsqueda + filtros simultáneos
 
-### Gestión de Archivos
-- Subida de imágenes de propiedades
-- Validación de tipos de archivo
-- Almacenamiento seguro en carpeta `uploads/`
+### Sistema de Galería de Fotos
+- **Fotos múltiples**: Hasta 10 fotos por propiedad
+- **Foto de portada**: Una foto destacada por propiedad
+- **Gestión visual**: Modal con drag & drop
+- **Validación**: Tipos de archivo seguros y límites de tamaño
 
 ---
 
 ## 🔍 Solución de Problemas
 
 ### Problemas Comunes
+
+#### Búsqueda No Funciona
+1. Verificar que el formulario apunte a `propiedad/search`
+2. Confirmar que el controlador `search()` esté implementado
+3. Verificar que el modelo tenga el método `search()`
+4. Revisar la construcción de URLs en los filtros
 
 #### URLs No Funcionan
 1. Verificar que mod_rewrite esté habilitado
@@ -280,23 +312,32 @@ redirect('propiedades', 'index', null, [
 1. Verificar permisos en la carpeta `uploads/`
 2. Confirmar que las rutas sean correctas
 3. Verificar que los archivos existan
+4. Comprobar que la tabla `fotos_propiedad` esté creada
+
+#### Fotos No Se Suben
+1. Verificar permisos de carpeta `uploads/`
+2. Comprobar límites de `upload_max_filesize` en PHP
+3. Verificar tipos de archivo permitidos
+4. Confirmar que el formulario tenga `enctype="multipart/form-data"`
 
 ---
 
 ## 🤝 Contribuir
 
 ### Mejoras Sugeridas
-1. **Nuevas entidades**: Añadir más tipos de propiedades
-2. **Reportes**: Generar reportes de ventas y comisiones
-3. **API**: Crear API REST para integración
+1. **Sistema de usuarios**: Autenticación y autorización
+2. **Reportes avanzados**: Generación de reportes de ventas y comisiones
+3. **API REST**: Para integración con aplicaciones móviles
 4. **Notificaciones**: Sistema de notificaciones por email
 5. **Dashboard**: Más estadísticas y gráficos
+6. **Búsqueda avanzada**: Filtros por precio, superficie, ubicación
 
 ### Estándares de Código
 - Seguir el patrón MVC
 - Usar funciones helper para URLs y redirecciones
 - Validar todos los datos de entrada
 - Documentar nuevas funcionalidades
+- Mantener consistencia en nombres (usar "propiedad" no "propiedades")
 
 ---
 

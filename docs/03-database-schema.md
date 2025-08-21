@@ -13,7 +13,7 @@
 
 ## 🎯 Descripción General
 
-La base de datos de "Hogar Ideal" está diseñada para gestionar un sistema inmobiliario completo, incluyendo propiedades, agentes, clientes, ventas y visitas. Utiliza MySQL 8.0 con codificación UTF-8 y collation español.
+La base de datos de "Hogar Ideal" está diseñada para gestionar un sistema inmobiliario completo, incluyendo propiedades, agentes, clientes, ventas, visitas y un sistema de galería de fotos múltiples. Utiliza MySQL 8.0 con codificación UTF-8 y collation español.
 
 ### 📊 Características Técnicas
 - **Motor**: InnoDB
@@ -21,6 +21,7 @@ La base de datos de "Hogar Ideal" está diseñada para gestionar un sistema inmo
 - **Collation**: utf8mb4_spanish2_ci
 - **Integridad Referencial**: Completa con FOREIGN KEYs
 - **Auto-increment**: En todas las claves primarias
+- **Sistema de Fotos**: Galería múltiple con foto de portada
 
 ---
 
@@ -138,7 +139,7 @@ CREATE TABLE `propiedad` (
 | `banos` | INT | Número de baños | NULL |
 | `superficie` | DECIMAL(10,2) | Superficie en m² | NOT NULL |
 | `precio` | DECIMAL(12,2) | Precio de la propiedad | NOT NULL |
-| `portada` | VARCHAR(255) | Ruta de la imagen de portada | NULL |
+| `portada` | VARCHAR(255) | Ruta de la imagen de portada (legacy) | NULL |
 | `estado` | ENUM | Estado de la propiedad | 'disponible', 'vendida' |
 | `id_cliente_vendedor` | INT | ID del cliente vendedor | FOREIGN KEY |
 | `id_agente` | INT | ID del agente asignado | FOREIGN KEY |
@@ -151,6 +152,49 @@ INSERT INTO `propiedad` VALUES
 (3, 'terreno', 'Av. Bolivia 890', 2, 1, '300.00', '200000.00', NULL, 'disponible', 3, 3),
 (4, 'casa', 'calle 45 #1a-24', 2, 2, '200.00', '89000000.00', NULL, 'vendida', 1, 1),
 (5, 'apartamento', 'Edificio trin Apto 12a', 2, 2, '100.00', '450000.00', 'uploads/6879b718c5263_cat.png', 'disponible', 3, 1);
+```
+
+---
+
+### 📸 Tabla: `fotos_propiedad`
+
+**Descripción**: Sistema de galería de fotos múltiples para propiedades.
+
+```sql
+CREATE TABLE `fotos_propiedad` (
+  `id_foto` int NOT NULL AUTO_INCREMENT,
+  `id_propiedad` int NOT NULL,
+  `nombre_archivo` varchar(255) NOT NULL,
+  `descripcion` varchar(200) DEFAULT NULL,
+  `orden` int DEFAULT 0,
+  `es_portada` tinyint(1) DEFAULT 0,
+  `fecha_creacion` timestamp DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_foto`),
+  KEY `id_propiedad` (`id_propiedad`),
+  KEY `idx_propiedad_orden` (`id_propiedad`, `orden`),
+  KEY `idx_es_portada` (`es_portada`),
+  CONSTRAINT `fotos_propiedad_ibfk_1` FOREIGN KEY (`id_propiedad`) REFERENCES `propiedad` (`id_propiedad`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
+```
+
+#### 📋 Campos de la Tabla
+
+| Campo | Tipo | Descripción | Restricciones |
+|-------|------|-------------|---------------|
+| `id_foto` | INT | Identificador único de la foto | AUTO_INCREMENT, PRIMARY KEY |
+| `id_propiedad` | INT | Referencia a la propiedad | FOREIGN KEY con CASCADE |
+| `nombre_archivo` | VARCHAR(255) | Nombre del archivo físico en el servidor | NOT NULL |
+| `descripcion` | VARCHAR(200) | Descripción opcional de la foto | NULL |
+| `orden` | INT | Orden de visualización de las fotos | DEFAULT 0 |
+| `es_portada` | TINYINT(1) | Indica si la foto es la portada (0=no, 1=sí) | DEFAULT 0 |
+| `fecha_creacion` | TIMESTAMP | Timestamp de cuando se subió la foto | DEFAULT CURRENT_TIMESTAMP |
+
+#### 📊 Datos de Ejemplo
+```sql
+INSERT INTO `fotos_propiedad` VALUES
+(1, 5, 'uploads/6879b718c5263_cat.png', 'Vista frontal del apartamento', 1, 1, '2024-01-15 10:30:00'),
+(2, 5, 'uploads/abc123_interior.jpg', 'Sala de estar', 2, 0, '2024-01-15 10:31:00'),
+(3, 5, 'uploads/def456_cocina.jpg', 'Cocina equipada', 3, 0, '2024-01-15 10:32:00');
 ```
 
 ---
@@ -178,7 +222,7 @@ CREATE TABLE `venta` (
   CONSTRAINT `venta_ibfk_1` FOREIGN KEY (`id_propiedad`) REFERENCES `propiedad` (`id_propiedad`),
   CONSTRAINT `venta_ibfk_2` FOREIGN KEY (`id_cliente_comprador`) REFERENCES `cliente` (`id_cliente`),
   CONSTRAINT `venta_ibfk_3` FOREIGN KEY (`id_cliente_vendedor`) REFERENCES `cliente` (`id_cliente`),
-  CONSTRAINT `venta_ibfk_4` FOREIGN KEY (`id_agente`) REFERENCES `agente` (`id_agente`)
+  CONSTRAINT `venta_ibfk_4` FOREIGN KEY (`id_agente`) REFERENCES `agente` (`id_cliente`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
 ```
 
@@ -260,6 +304,7 @@ propiedad (1) ←→ (N) venta
 cliente (1) ←→ (N) visita
 propiedad (1) ←→ (N) visita
 agente (1) ←→ (N) visita
+propiedad (1) ←→ (N) fotos_propiedad
 ```
 
 ### Relaciones Específicas
@@ -274,13 +319,19 @@ agente (1) ←→ (N) visita
 - Una propiedad tiene un solo vendedor
 - **Clave foránea**: `propiedad.id_cliente_vendedor → cliente.id_cliente`
 
-#### 3. Venta (Relaciones Múltiples)
+#### 3. Propiedad → Fotos
+- Una propiedad puede tener múltiples fotos
+- Solo una foto puede ser portada por propiedad
+- **Clave foránea**: `fotos_propiedad.id_propiedad → propiedad.id_propiedad`
+- **CASCADE DELETE**: Al eliminar propiedad se eliminan sus fotos
+
+#### 4. Venta (Relaciones Múltiples)
 - **Propiedad**: Una propiedad puede tener una venta
 - **Cliente Comprador**: Un cliente puede comprar múltiples propiedades
 - **Cliente Vendedor**: Un cliente puede vender múltiples propiedades
 - **Agente**: Un agente puede realizar múltiples ventas
 
-#### 4. Visita (Relaciones Múltiples)
+#### 5. Visita (Relaciones Múltiples)
 - **Cliente**: Un cliente puede hacer múltiples visitas
 - **Propiedad**: Una propiedad puede tener múltiples visitas
 - **Agente**: Un agente puede acompañar múltiples visitas
@@ -295,6 +346,7 @@ agente (1) ←→ (N) visita
 agente.id_agente
 cliente.id_cliente
 propiedad.id_propiedad
+fotos_propiedad.id_foto
 venta.id_venta
 visita.id_visita
 ```
@@ -311,6 +363,9 @@ cliente.email
 -- Propiedad
 propiedad.id_cliente_vendedor → cliente.id_cliente
 propiedad.id_agente → agente.id_agente
+
+-- Fotos Propiedad
+fotos_propiedad.id_propiedad → propiedad.id_propiedad
 
 -- Venta
 venta.id_propiedad → propiedad.id_propiedad
@@ -329,6 +384,9 @@ visita.id_agente → agente.id_agente
 -- Índices en claves foráneas para mejorar rendimiento
 propiedad.id_cliente_vendedor
 propiedad.id_agente
+fotos_propiedad.id_propiedad
+fotos_propiedad.id_propiedad, orden
+fotos_propiedad.es_portada
 venta.id_propiedad
 venta.id_cliente_comprador
 venta.id_cliente_vendedor
@@ -336,26 +394,63 @@ venta.id_agente
 visita.id_cliente
 visita.id_propiedad
 visita.id_agente
+
+-- Índices para búsqueda
+propiedad.direccion
+propiedad.tipo
+propiedad.estado
+propiedad.precio
 ```
 
 ---
 
 ## 📊 Consultas Comunes
 
-### 1. Propiedades Disponibles con Información del Agente
+### 1. Propiedades Disponibles con Información del Agente y Fotos
 ```sql
 SELECT 
     p.*,
     a.nombre_completo as agente_nombre,
-    c.nombre_completo as vendedor_nombre
+    c.nombre_completo as vendedor_nombre,
+    fp.nombre_archivo as foto_portada,
+    fp.descripcion as descripcion_foto
 FROM propiedad p
 JOIN agente a ON p.id_agente = a.id_agente
 JOIN cliente c ON p.id_cliente_vendedor = c.id_cliente
+LEFT JOIN fotos_propiedad fp ON p.id_propiedad = fp.id_propiedad AND fp.es_portada = 1
 WHERE p.estado = 'disponible'
 ORDER BY p.precio ASC;
 ```
 
-### 2. Ventas por Agente con Comisiones
+### 2. Búsqueda de Propiedades por Texto (Sistema Implementado)
+```sql
+SELECT 
+    p.*,
+    c.nombre_completo as cliente_vendedor,
+    a.nombre_completo as agente_nombre
+FROM propiedad p
+LEFT JOIN cliente c ON p.id_cliente_vendedor = c.id_cliente
+LEFT JOIN agente a ON p.id_agente = a.id_agente
+WHERE p.direccion LIKE ? OR c.nombre_completo LIKE ? OR a.nombre_completo LIKE ?
+ORDER BY p.id_propiedad DESC;
+```
+
+### 3. Propiedades por Tipo con Fotos de Portada
+```sql
+SELECT 
+    p.*,
+    a.nombre_completo as agente_nombre,
+    c.nombre_completo as vendedor_nombre,
+    fp.nombre_archivo as foto_portada
+FROM propiedad p
+JOIN agente a ON p.id_agente = a.id_agente
+JOIN cliente c ON p.id_cliente_vendedor = c.id_cliente
+LEFT JOIN fotos_propiedad fp ON p.id_propiedad = fp.id_propiedad AND fp.es_portada = 1
+WHERE p.tipo = ?
+ORDER BY p.precio DESC;
+```
+
+### 4. Ventas por Agente con Comisiones
 ```sql
 SELECT 
     a.nombre_completo as agente,
@@ -369,7 +464,7 @@ GROUP BY a.id_agente, a.nombre_completo
 ORDER BY total_comisiones DESC;
 ```
 
-### 3. Propiedades por Tipo y Estado
+### 5. Propiedades por Tipo y Estado
 ```sql
 SELECT 
     tipo,
@@ -383,7 +478,19 @@ GROUP BY tipo, estado
 ORDER BY tipo, estado;
 ```
 
-### 4. Visitas Programadas para Hoy
+### 6. Galería Completa de una Propiedad
+```sql
+SELECT 
+    fp.*,
+    p.direccion as propiedad_direccion,
+    p.tipo as propiedad_tipo
+FROM fotos_propiedad fp
+JOIN propiedad p ON fp.id_propiedad = p.id_propiedad
+WHERE fp.id_propiedad = ?
+ORDER BY fp.orden ASC;
+```
+
+### 7. Visitas Programadas para Hoy
 ```sql
 SELECT 
     v.fecha_hora,
@@ -393,26 +500,55 @@ SELECT
 FROM visita vi
 JOIN cliente c ON vi.id_cliente = c.id_cliente
 JOIN propiedad p ON vi.id_propiedad = p.id_propiedad
-JOIN agente a ON vi.id_agente = a.id_agente
+JOIN agente a ON vi.id_agente = vi.id_agente
 WHERE DATE(vi.fecha_hora) = CURDATE()
 AND vi.estado = 'programada'
 ORDER BY vi.fecha_hora;
 ```
 
-### 5. Top 5 Propiedades Más Caras
+### 8. Top 5 Propiedades Más Caras con Fotos
 ```sql
 SELECT 
     p.tipo,
     p.direccion,
     p.precio,
     a.nombre_completo as agente,
-    c.nombre_completo as vendedor
+    c.nombre_completo as vendedor,
+    fp.nombre_archivo as foto_portada
 FROM propiedad p
 JOIN agente a ON p.id_agente = a.id_agente
 JOIN cliente c ON p.id_cliente_vendedor = c.id_cliente
+LEFT JOIN fotos_propiedad fp ON p.id_propiedad = fp.id_propiedad AND fp.es_portada = 1
 WHERE p.estado = 'disponible'
 ORDER BY p.precio DESC
 LIMIT 5;
+```
+
+### 9. Estadísticas de Fotos por Propiedad
+```sql
+SELECT 
+    p.direccion,
+    p.tipo,
+    COUNT(fp.id_foto) as total_fotos,
+    SUM(CASE WHEN fp.es_portada = 1 THEN 1 ELSE 0 END) as tiene_portada
+FROM propiedad p
+LEFT JOIN fotos_propiedad fp ON p.id_propiedad = fp.id_propiedad
+GROUP BY p.id_propiedad, p.direccion, p.tipo
+ORDER BY total_fotos DESC;
+```
+
+### 10. Propiedades sin Fotos
+```sql
+SELECT 
+    p.*,
+    a.nombre_completo as agente_nombre,
+    c.nombre_completo as vendedor_nombre
+FROM propiedad p
+JOIN agente a ON p.id_agente = a.id_agente
+JOIN cliente c ON p.id_cliente_vendedor = c.id_cliente
+LEFT JOIN fotos_propiedad fp ON p.id_propiedad = fp.id_propiedad
+WHERE fp.id_foto IS NULL
+ORDER BY p.id_propiedad DESC;
 ```
 
 ---
@@ -431,10 +567,10 @@ mysql -u usuario -p hogar_ideal < backup_hogar_ideal.sql
 ### Optimización
 ```sql
 -- Analizar tablas para optimizar índices
-ANALYZE TABLE agente, cliente, propiedad, venta, visita;
+ANALYZE TABLE agente, cliente, propiedad, fotos_propiedad, venta, visita;
 
 -- Optimizar tablas
-OPTIMIZE TABLE agente, cliente, propiedad, venta, visita;
+OPTIMIZE TABLE agente, cliente, propiedad, fotos_propiedad, venta, visita;
 ```
 
 ### Monitoreo
@@ -459,16 +595,19 @@ SHOW TABLE STATUS FROM hogar_ideal;
 - Todos los campos de búsqueda frecuente
 - Campos de ordenamiento (precio, fecha)
 - Campos de filtrado (estado, tipo)
+- **Nuevo**: Índices para sistema de fotos
 
 ### 2. Particionamiento
 Para bases de datos grandes, considerar:
 - Particionar por fecha en tabla `venta`
 - Particionar por zona en tabla `agente`
+- Particionar por tipo en tabla `propiedad`
 
 ### 3. Optimización de Consultas
 - Usar LIMIT en consultas de listado
 - Implementar paginación
 - Cachear consultas frecuentes
+- **Nuevo**: Optimizar consultas de fotos con JOINs
 
 ---
 
@@ -486,6 +625,7 @@ FLUSH PRIVILEGES;
 - Validar todos los datos de entrada
 - Usar prepared statements
 - Escapar datos de salida
+- **Nuevo**: Validar archivos de imagen
 
 ### 3. Auditoría
 ```sql
@@ -511,8 +651,10 @@ Para implementar mejoras en la base de datos:
 3. **Triggers** para auditoría automática
 4. **Vistas** para consultas frecuentes
 5. **Replicación** para alta disponibilidad
+6. **Optimización de fotos** con compresión automática
 
 Para más información sobre implementaciones específicas, consulta:
 - [Documentación de Entidades](04-entities/)
 - [Funciones Helper](05-functions/)
-- [Guía MVC](02-mvc-pattern.md) 
+- [Guía MVC](02-mvc-pattern.md)
+- [Sistema de Galería de Fotos](10-galeria-fotos.md) 
