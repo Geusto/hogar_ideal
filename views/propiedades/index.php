@@ -32,9 +32,7 @@ ob_start();
     <!-- Filtros y búsqueda -->
     <div class="bg-white rounded-lg shadow-md p-6 mb-6">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <form method="GET" class="md:col-span-2">
-                <input type="hidden" name="controller" value="propiedad">
-                <input type="hidden" name="action" value="search">
+            <form method="GET" action="<?= prettyUrl('propiedad', 'search') ?>" class="md:col-span-2">
                 <div class="flex">
                     <input type="text" name="q" placeholder="Buscar propiedades..." 
                         value="<?php echo htmlspecialchars($_GET['q'] ?? ''); ?>"
@@ -175,15 +173,11 @@ include 'views/layouts/modal_confirmacion.php';
         const tipo = document.getElementById('filtroTipo').value;
         
         let url = '<?= prettyUrl('propiedad', 'index') ?>';
-        
-        if (estado) {
-            url += '&estado=' + estado;
-        }
-        
-        if (tipo) {
-            url += '&tipo_propiedad=' + tipo;
-        }
-        
+        const params = new URLSearchParams();
+        if (estado) { params.set('estado', estado); }
+        if (tipo) { params.set('tipo_propiedad', tipo); }
+        const qs = params.toString();
+        if (qs) { url += '?' + qs; }
         window.location.href = url;
     }
 

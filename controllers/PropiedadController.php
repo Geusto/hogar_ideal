@@ -199,8 +199,16 @@ class PropiedadController {
         
         if (!empty($query)) {
             $propiedades = $this->propiedadModel->search($query);
+        } else {
+            $propiedades = $this->propiedadModel->getAll();
         }
         
+        // Obtener fotos de portada para cada propiedad
+        foreach ($propiedades as &$propiedad) {
+            $fotoPortada = $this->propiedadModel->getFotoPortada($propiedad['id_propiedad']);
+            $propiedad['foto_portada'] = $fotoPortada;
+        }
+
         include 'views/propiedades/index.php';
     }
     
